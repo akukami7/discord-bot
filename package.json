@@ -1,21 +1,36 @@
 {
   "name": "angelss",
   "version": "1.0.0",
-  "description": "",
+  "description": "Multi-bot Discord system",
   "main": "src/index.js",
   "scripts": {
-    "start": "node src/index.js",
-    "dev": "node --watch src/index.js",
+    "start": "node start-all-bots.js",
+    "start:single": "node src/index.js",
+    "dev": "node --watch start-all-bots.js",
+    "dev:single": "node --watch src/index.js",
+    "deploy": "node deploy-commands.js all",
+    "deploy:tickets": "node deploy-commands.js tickets",
+    "deploy:main": "node deploy-commands.js main",
+    "deploy:moderator": "node deploy-commands.js moderator",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "workspaces": [
+    "shared"
+  ],
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@openrouter/sdk": "^0.12.7",
     "chalk": "^5.6.2",
     "discord.js": "^14.26.3",
     "dotenv": "^17.4.2",
     "mongoose": "^9.4.1"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.0"
   },
   "type": "module"
 }

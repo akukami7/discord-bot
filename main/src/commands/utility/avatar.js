@@ -9,7 +9,7 @@ export default {
     const user = interaction.options.getUser('user') || interaction.user;
     const member = interaction.guild.members.cache.get(user.id);
 
-    const avatar = member?.displayAvatarURL({ size: 1024, dynamic: true }) 
+    const avatar = member?.displayAvatarURL({ size: 1024, dynamic: true })
       || user.displayAvatarURL({ size: 1024, dynamic: true });
 
     const embed = new EmbedBuilder()

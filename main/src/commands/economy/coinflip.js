@@ -1,24 +1,33 @@
 import { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
 import User from '../../models/User.js';
 import Transaction from '../../models/Transaction.js';
-import { formatNumber } from '../../utils/helpers.js';
+import { formatNumber, CooldownManager } from '../../../../shared/utils/helpers.js';
 
 const COINFLIP_GIF = 'https://media1.tenor.com/m/jCBvGeRFhN8AAAAd/coin-flip.gif';
 const COINFLIP_WIN_GIF = 'https://media1.tenor.com/m/0gj5Kz6HQUIAAAAd/money-rain-make-it-rain.gif';
 const COINFLIP_LOSE_GIF = 'https://media1.tenor.com/m/PuGMVjSfRIkAAAAd/money-gone.gif';
 
-// Track processed coinflips to prevent double-clicks
-const processedCoinflips = new Set();
+// TTL-based cooldowns
+const coinflipCooldown = new CooldownManager();
+const COMMAND_COOLDOWN_MS = 5000; // 5s between commands
+const DOUBLE_CLICK_KEY_MS = 1; // processed flag
 
 export default {
   data: new SlashCommandBuilder()
     .setName('coinflip')
     .setDescription('Сыграть в монетку')
-    .addIntegerOption(opt => opt.setName('amount').setDescription('Ставка').setRequired(true).setMinValue(10)),
+    .addIntegerOption(opt => opt.setName('amount').setDescription('Ставка').setRequired(true).setMinValue(10).setMaxValue(1000000)),
   async execute(interaction, client) {
     const amount = interaction.options.getInteger('amount');
     const guildId = interaction.guild.id;
     const userId = interaction.user.id;
+
+    // Rate limiting
+    const cooldownKey = `coinflip_cmd_${userId}`;
+    if (coinflipCooldown.isOnCooldown(cooldownKey, COMMAND_COOLDOWN_MS)) {
+      const remaining = coinflipCooldown.getRemainingTime(cooldownKey, COMMAND_COOLDOWN_MS);
+      return interaction.reply({ content: `⏳ Подождите ${Math.ceil(remaining / 1000)}с. перед следующей игрой.`, ephemeral: true });
+    }
 
     await interaction.deferReply();
 
@@ -47,8 +56,9 @@ export default {
 
     // Auto-expire after 30 seconds
     setTimeout(async () => {
-      if (!processedCoinflips.has(msg.id)) {
-        processedCoinflips.add(msg.id);
+      const key = `coinflip_expire_${msg.id}`;
+      if (!coinflipCooldown.isOnCooldown(key, DOUBLE_CLICK_KEY_MS)) {
+        coinflipCooldown.cooldowns.set(key, Date.now());
         const expEmbed = new EmbedBuilder()
           .setTitle(`Монетка — ${interaction.user.displayName}`)
           .setDescription(`<@${userId}>, время на ответ **вышло**`)
@@ -71,18 +81,21 @@ export default {
     const guildId = interaction.guild.id;
     const userId = interaction.user.id;
 
-    // Prevent double-click using message ID
-    const msgId = interaction.message.id;
-    if (processedCoinflips.has(msgId)) {
-      return interaction.reply({ content: 'Эта игра уже завершена.', flags: 64 });
+    // Prevent double-click using cooldown manager
+    const key = `coinflip_click_${interaction.message.id}`;
+    if (coinflipCooldown.isOnCooldown(key, DOUBLE_CLICK_KEY_MS)) {
+      return interaction.reply({ content: 'Эта игра уже завершена.', ephemeral: true });
     }
-    processedCoinflips.add(msgId);
 
     await interaction.deferUpdate();
 
-    // Re-check balance
-    const user = await User.findOne({ guildId, userId });
-    if (!user || user.balance < amount) {
+    // Re-check balance and deduct atomically to prevent race conditions
+    const user = await User.findOneAndUpdate(
+      { guildId, userId, balance: { $gte: amount } },
+      { $inc: { balance: -amount } }
+    );
+
+    if (!user) {
       const errEmbed = new EmbedBuilder()
         .setTitle(`Монетка — ${interaction.user.displayName}`)
         .setDescription(`<@${userId}>, недостаточно монет!`)
@@ -110,7 +123,7 @@ export default {
     const resultText = result === 'heads' ? 'Орёл' : 'Решка';
 
     if (won) {
-      await User.findOneAndUpdate({ guildId, userId }, { $inc: { balance: amount } });
+      await User.findOneAndUpdate({ guildId, userId }, { $inc: { balance: amount * 2 } });
       await Transaction.create({
         guildId,
         fromId: userId,
@@ -119,7 +132,7 @@ export default {
         description: `Выигрыш в монетку: +${amount}`,
       });
     } else {
-      await User.findOneAndUpdate({ guildId, userId }, { $inc: { balance: -amount } });
+      // Stake already deducted atomically
       await Transaction.create({
         guildId,
         fromId: userId,

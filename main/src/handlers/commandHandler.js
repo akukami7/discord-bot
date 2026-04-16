@@ -12,7 +12,7 @@ export const loadCommands = async (client) => {
   }
 
   // Recursively load all .js files from subdirectories
-  const categories = fs.readdirSync(commandsPath).filter(f => 
+  const categories = fs.readdirSync(commandsPath).filter(f =>
     fs.statSync(path.join(commandsPath, f)).isDirectory()
   );
 

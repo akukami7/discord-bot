@@ -1,9 +1,10 @@
 import 'dotenv/config';
 import { Client, GatewayIntentBits, Partials, Collection } from 'discord.js';
 import chalk from 'chalk';
-import { connectDatabase } from './database/mongoose.js';
-import { loadCommands } from './handlers/commandHandler.js';
-import { loadEvents } from './handlers/eventHandler.js';
+import { connectDatabase } from '../shared/database/mongoose.js';
+import { loadCommands } from '../shared/handlers/commandHandler.js';
+import { loadEvents } from '../shared/handlers/eventHandler.js';
+import path from 'path';
 
 const client = new Client({
   intents: [
@@ -38,8 +39,11 @@ async function init() {
   try {
     console.log(chalk.blue('Starting Tickets Bot...'));
     await connectDatabase();
-    
-    await loadCommands(client);
+
+    await loadCommands(client, {
+      commandsPath: path.join(process.cwd(), 'src', 'commands'),
+      recursive: false,
+    });
     await loadEvents(client);
 
     await client.login(process.env.TOKEN);

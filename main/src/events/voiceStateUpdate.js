@@ -73,7 +73,7 @@ async function handleLeave(guildId, userId, channelId, client) {
 
   if (marriage) {
     const partnerId = marriage.user1Id === userId ? marriage.user2Id : marriage.user1Id;
-    
+
     // Check if partner is currently in the same channel
     const guild = client.guilds.cache.get(guildId);
     if (guild) {

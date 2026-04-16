@@ -39,11 +39,15 @@ export default {
       const guildId = interaction.guild.id;
       const userId = interaction.user.id;
 
-      const user = await User.findOne({ guildId, userId });
       const currencyField = item.currency === 'standart' ? 'donate' : 'balance';
       const currencyEmoji = item.currency === 'standart' ? '👑' : '🦋';
 
-      if (!user || user[currencyField] < item.price) {
+      const user = await User.findOneAndUpdate(
+        { guildId, userId, [currencyField]: { $gte: item.price } },
+        { $inc: { [currencyField]: -item.price } }
+      );
+
+      if (!user) {
         return interaction.editReply(`Недостаточно ${currencyEmoji}!`);
       }
 
@@ -62,10 +66,7 @@ export default {
         }
       }
 
-      await User.findOneAndUpdate(
-        { guildId, userId },
-        { $inc: { [currencyField]: -item.price } }
-      );
+      // Balance was already deducted atomically above
 
       await Inventory.create({ guildId, userId, itemId: item._id });
 

@@ -27,7 +27,7 @@ export default {
     if (action === 'list') {
       // Find all members with a role that has "спонсор" in name
       const sponsorRoles = interaction.guild.roles.cache.filter(r => r.name.toLowerCase().includes('спонсор'));
-      
+
       if (sponsorRoles.size === 0) {
         return interaction.editReply('Роли спонсоров не найдены.');
       }

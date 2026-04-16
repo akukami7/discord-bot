@@ -39,7 +39,9 @@ export default {
         try {
           const firstUser = await client.users.fetch(users[0].userId);
           embed.setThumbnail(firstUser.displayAvatarURL({ size: 256 }));
-        } catch {}
+        } catch (err) {
+          // ignore fetch errors
+        }
       }
 
       return interaction.editReply({ embeds: [embed] });

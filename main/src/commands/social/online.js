@@ -18,7 +18,7 @@ export default {
     // Calculate daily — reset if it's a new day
     const today = new Date().toDateString();
     const lastReset = user?.lastDailyReset ? user.lastDailyReset.toDateString() : null;
-    let dailySeconds = (lastReset === today) ? (user?.dailyVoiceOnline || 0) : 0;
+    const dailySeconds = (lastReset === today) ? (user?.dailyVoiceOnline || 0) : 0;
 
     // If currently in voice, add current session
     let currentSession = 0;

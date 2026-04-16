@@ -1,9 +1,12 @@
 import 'dotenv/config';
 import { Client, GatewayIntentBits, Partials, Collection } from 'discord.js';
 import chalk from 'chalk';
-import { connectDatabase } from './database/mongoose.js';
-import { loadCommands } from './handlers/commandHandler.js';
-import { loadEvents } from './handlers/eventHandler.js';
+import { connectDatabase } from '../../shared/database/mongoose.js';
+import { loadCommands } from '../../shared/handlers/commandHandler.js';
+import { loadEvents } from '../../shared/handlers/eventHandler.js';
+import { CooldownManager } from '../../shared/utils/helpers.js';
+import { startDuelCleanup } from './utils/duelCleanup.js';
+import path from 'path';
 
 const client = new Client({
   intents: [
@@ -13,6 +16,7 @@ const client = new Client({
     GatewayIntentBits.MessageContent,
     GatewayIntentBits.GuildVoiceStates,
     GatewayIntentBits.GuildPresences,
+    GatewayIntentBits.GuildModeration,
   ],
   partials: [
     Partials.Channel,
@@ -34,8 +38,8 @@ client.config = {
   xpMax: parseInt(process.env.XP_MAX) || 25,
 };
 
-// XP cooldown tracker (in-memory)
-client.xpCooldowns = new Map();
+// XP cooldown tracker with automatic cleanup
+client.xpCooldowns = new CooldownManager();
 
 process.on('unhandledRejection', (reason, promise) => {
   console.error('Unhandled Rejection at:', promise, 'reason:', reason);
@@ -50,10 +54,16 @@ async function init() {
     console.log(chalk.blue('Starting Main Bot...'));
     await connectDatabase();
 
-    await loadCommands(client);
+    await loadCommands(client, {
+      commandsPath: path.join(process.cwd(), 'src', 'commands'),
+      recursive: true,
+    });
     await loadEvents(client);
 
     await client.login(process.env.TOKEN);
+
+    // Start periodic duel cleanup
+    startDuelCleanup(client);
   } catch (error) {
     console.error(chalk.red('Fatal init error:'), error);
     process.exit(1);

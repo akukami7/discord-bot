@@ -1,6 +1,6 @@
 import { Events } from 'discord.js';
 import User from '../models/User.js';
-import { xpForLevel, randomInt } from '../utils/helpers.js';
+import { xpForLevel, randomInt } from '../../../shared/utils/helpers.js';
 
 export default {
   name: Events.MessageCreate,
@@ -10,16 +10,13 @@ export default {
     const guildId = message.guild.id;
     const userId = message.author.id;
 
-    // XP Cooldown check
+    // XP Cooldown check using CooldownManager
     const cooldownKey = `${guildId}-${userId}`;
-    const lastXp = client.xpCooldowns.get(cooldownKey);
-    if (lastXp && Date.now() - lastXp < client.config.xpCooldown) return;
-
-    client.xpCooldowns.set(cooldownKey, Date.now());
+    if (client.xpCooldowns.isOnCooldown(cooldownKey, client.config.xpCooldown)) return;
 
     const xpGain = randomInt(client.config.xpMin, client.config.xpMax);
 
-    let user = await User.findOneAndUpdate(
+    const user = await User.findOneAndUpdate(
       { guildId, userId },
       { $inc: { xp: xpGain, totalXp: xpGain } },
       { upsert: true, new: true }
@@ -32,7 +29,7 @@ export default {
       user.level += 1;
       await user.save();
 
-      // Level up notification (optional — send in same channel)
+      // Level up notification
       message.channel.send({
         content: `🎉 ${message.author} достиг **${user.level}** уровня!`
       }).catch(() => {});

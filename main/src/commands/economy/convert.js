@@ -14,15 +14,13 @@ export default {
 
     await interaction.deferReply();
 
-    const user = await User.findOne({ guildId: interaction.guild.id, userId: interaction.user.id });
-    if (!user || user.stars < starAmount) {
-      return interaction.editReply('❌ Недостаточно звёзд!');
-    }
-
-    await User.findOneAndUpdate(
-      { guildId: interaction.guild.id, userId: interaction.user.id },
+    const user = await User.findOneAndUpdate(
+      { guildId: interaction.guild.id, userId: interaction.user.id, stars: { $gte: starAmount } },
       { $inc: { stars: -starAmount, balance: coinAmount } }
     );
+    if (!user) {
+      return interaction.editReply('❌ Недостаточно звёзд!');
+    }
 
     await Transaction.create({
       guildId: interaction.guild.id,

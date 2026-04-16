@@ -1,0 +1,13 @@
+{
+  "name": "angelss-shared",
+  "version": "1.0.0",
+  "type": "module",
+  "private": true,
+  "exports": {
+    "./database": "./database/mongoose.js",
+    "./handlers": "./handlers/commandHandler.js",
+    "./events": "./handlers/eventHandler.js",
+    "./utils": "./utils/helpers.js",
+    "./buttons": "./handlers/buttonRegistry.js"
+  }
+}

@@ -62,7 +62,9 @@ export default {
           const expEmbed = EmbedBuilder.from(embed).setDescription('⏳ Предложение истекло.').setColor(0x99AAB5);
           await interaction.editReply({ embeds: [expEmbed], components: [] });
         }
-      } catch {}
+      } catch (err) {
+        // ignore timeout errors
+      }
     }, 60000);
   },
 
@@ -87,22 +89,18 @@ export default {
     }
 
     // Accept — check neither is married now
-    const existing = await Marriage.findOne({
-      guildId,
-      $or: [
-        { user1Id: proposerId }, { user2Id: proposerId },
-        { user1Id: targetId }, { user2Id: targetId }
-      ]
-    });
-
-    if (existing) {
-      return interaction.editReply({
-        embeds: [new EmbedBuilder().setDescription('❌ Один из пользователей уже в браке.').setColor(0xED4245)],
-        components: []
-      });
+    try {
+      await Marriage.create({ guildId, user1Id: proposerId, user2Id: targetId });
+    } catch (err) {
+      // Handle duplicate key error (race condition)
+      if (err.code === 11000) {
+        return interaction.editReply({
+          embeds: [new EmbedBuilder().setDescription('❌ Один из пользователей уже в браке.').setColor(0xED4245)],
+          components: []
+        });
+      }
+      throw err;
     }
-
-    await Marriage.create({ guildId, user1Id: proposerId, user2Id: targetId });
 
     const embed = new EmbedBuilder()
       .setTitle('💍 Свадьба!')

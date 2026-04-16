@@ -8,8 +8,9 @@ const marriageSchema = new mongoose.Schema({
   pairOnline: { type: Number, default: 0 }, // seconds together in voice
 });
 
-marriageSchema.index({ guildId: 1, user1Id: 1 });
-marriageSchema.index({ guildId: 1, user2Id: 1 });
+// Unique indexes to prevent double-marriage (race condition protection)
+marriageSchema.index({ guildId: 1, user1Id: 1 }, { unique: true });
+marriageSchema.index({ guildId: 1, user2Id: 1 }, { unique: true });
 marriageSchema.index({ guildId: 1, pairOnline: -1 });
 
 export default mongoose.model('MainMarriage', marriageSchema);
