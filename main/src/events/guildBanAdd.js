@@ -1,6 +1,6 @@
 import { AuditLogEvent } from 'discord.js';
-import GuildConfig from '../../models/GuildConfig.js';
-import { checkRateLimit, triggerAntiCrash } from '../../utils/antiCrashCache.js';
+import GuildConfig from '../models/GuildConfig.js';
+import { checkRateLimit, triggerAntiCrash } from '../utils/antiCrashCache.js';
 
 export default {
   name: 'guildBanAdd',

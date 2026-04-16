@@ -1,5 +1,5 @@
 import { EmbedBuilder } from 'discord.js';
-import GuildConfig from '../../models/GuildConfig.js';
+import GuildConfig from '../models/GuildConfig.js';
 
 export default {
   name: 'guildMemberAdd',
