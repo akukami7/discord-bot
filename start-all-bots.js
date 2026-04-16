@@ -6,13 +6,13 @@ import fs from 'fs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-// Load root .env file
+// Load root .env file (optional on Render — env vars are injected directly)
 const envPath = path.join(__dirname, '.env');
 if (fs.existsSync(envPath)) {
   dotenv.config({ path: envPath });
+  console.log('[Master] Loaded .env file.');
 } else {
-  console.error('[Master] .env file not found! Please create one from .env.example');
-  process.exit(1);
+  console.log('[Master] No .env file found — using environment variables from host (Render/Docker/etc.).');
 }
 
 // Validate required root env vars
