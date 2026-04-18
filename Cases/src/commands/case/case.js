@@ -169,7 +169,6 @@ export default {
 
   // ─── /case open ────────────────────────────────────
   async handleOpen(interaction) {
-    const guildId = interaction.guild.id;
     const userId = interaction.user.id;
 
     // Cooldown check
@@ -184,49 +183,33 @@ export default {
 
     await interaction.deferReply();
 
-    const mainUser = await MainUser.findOne({ guildId, userId });
-    const balance = mainUser?.balance ?? 0;
-
+    // 1:1 Screenshot logic
     const embed = new EmbedBuilder().setColor(0x2B2D31)
-      .setTitle('🎰 Открытие кейса')
-      .setDescription(
-        `Стоимость: **${formatNumber(CASE_PRICE)}** 🦋\n` +
-        `Ваш баланс: **${formatNumber(balance)}** 🦋\n\n` +
-        (balance >= CASE_PRICE
-          ? '> Нажмите кнопку ниже, чтобы купить и открыть кейс!'
-          : '> ❌ Недостаточно средств для покупки кейса.')
-      )
-      .setColor(balance >= CASE_PRICE ? 0x2B2D31 : 0xED4245)
-      .setFooter({ text: `Angelss Cases • ${new Date().toLocaleDateString('ru-RU')}` });
+      .setTitle('Открыть кейс')
+      .setDescription(`<@${userId}>, у Вас **нет** кейсов`)
+      .setThumbnail('https://i.imgur.com/rD9I6v1.jpeg'); // Neo Image
 
-    const components = [];
-    if (balance >= CASE_PRICE) {
-      const row = new ActionRowBuilder().addComponents(
-        new ButtonBuilder()
-          .setCustomId(`buy_case_${userId}`)
-          .setLabel(`Купить кейс и открыть — ${formatNumber(CASE_PRICE)} 🦋`)
-          .setStyle(ButtonStyle.Success)
-          .setEmoji('📦'),
-      );
-      components.push(row);
-    }
+    const row = new ActionRowBuilder().addComponents(
+      new ButtonBuilder()
+        .setCustomId(`buy_case_${userId}`)
+        .setLabel('Купить кейс и открыть')
+        .setStyle(ButtonStyle.Primary)
+    );
 
-    const msg = await interaction.editReply({ embeds: [embed], components });
+    const msg = await interaction.editReply({ embeds: [embed], components: [row] });
 
     // Auto-expire button after 30 seconds
-    if (balance >= CASE_PRICE) {
-      setTimeout(async () => {
-        const key = `case_expire_${msg.id}`;
-        if (!caseCooldown.isOnCooldown(key, 1)) {
-          caseCooldown.cooldowns.set(key, Date.now());
-          const expEmbed = new EmbedBuilder().setColor(0x2B2D31)
-            .setTitle('🎰 Открытие кейса')
-            .setDescription(`<@${userId}>, время на покупку **вышло**.`)
-            .setColor(0x2B2D31);
-          await interaction.editReply({ embeds: [expEmbed], components: [] }).catch(() => {});
-        }
-      }, 30000);
-    }
+    setTimeout(async () => {
+      const key = `case_expire_${msg.id}`;
+      if (!caseCooldown.isOnCooldown(key, 1)) {
+        caseCooldown.cooldowns.set(key, Date.now());
+        const expEmbed = new EmbedBuilder().setColor(0x2B2D31)
+          .setTitle('Открыть кейс')
+          .setDescription(`<@${userId}>, время на покупку **вышло**.`)
+          .setThumbnail('https://i.imgur.com/rD9I6v1.jpeg');
+        await interaction.editReply({ embeds: [expEmbed], components: [] }).catch(() => {});
+      }
+    }, 30000);
   },
 
   // ─── Button handler (buy_case_{userId}) ────────────
@@ -258,9 +241,9 @@ export default {
 
     if (!updatedUser) {
       const errEmbed = new EmbedBuilder().setColor(0x2B2D31)
-        .setTitle('🎰 Открытие кейса')
-        .setDescription(`<@${userId}>, недостаточно 🦋!`)
-        .setColor(0xED4245);
+        .setTitle('Купить кейс')
+        .setDescription(`<@${userId}>, у Вас нет **${CASE_PRICE}** 🦋`)
+        .setThumbnail('https://i.imgur.com/rD9I6v1.jpeg');
       return interaction.editReply({ embeds: [errEmbed], components: [] });
     }
 

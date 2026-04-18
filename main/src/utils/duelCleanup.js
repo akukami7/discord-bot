@@ -8,6 +8,8 @@ export function startDuelCleanup(client) {
   const CLEANUP_INTERVAL_MS = 60000; // 1 minute
 
   async function cleanupExpiredDuels() {
+    if (Duel.db.readyState !== 1) return; // Пропускаем, если БД не подключена
+
     try {
       const now = new Date();
       const result = await Duel.updateMany(
