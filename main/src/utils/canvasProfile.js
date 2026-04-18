@@ -1,4 +1,9 @@
-import { createCanvas, loadImage } from '@napi-rs/canvas';
+import { createCanvas, loadImage, GlobalFonts } from '@napi-rs/canvas';
+import { fileURLToPath } from 'url';
+import path from 'path';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+GlobalFonts.registerFromPath(path.join(__dirname, '..', 'assets', 'fonts', 'Inter.ttf'), 'Inter');
 
 export async function generateProfileCard({
   username,
@@ -17,211 +22,261 @@ export async function generateProfileCard({
   nextXp,
   marriageText
 }) {
-  const width = 1000;
-  const height = 600;
-  const canvas = createCanvas(width, height);
+  const W = 1024;
+  const H = 600;
+  const canvas = createCanvas(W, H);
   const ctx = canvas.getContext('2d');
 
-  // Background
-  const gradient = ctx.createLinearGradient(0, 0, width, height);
-  gradient.addColorStop(0, '#2b2d31');
-  gradient.addColorStop(1, '#1e1f22');
-  ctx.fillStyle = gradient;
-  ctx.fillRect(0, 0, width, height);
+  // ── Background gradient ──
+  const bg = ctx.createLinearGradient(0, 0, W, H);
+  bg.addColorStop(0, '#1a1b1e');
+  bg.addColorStop(1, '#2b2d31');
+  ctx.fillStyle = bg;
+  ctx.fillRect(0, 0, W, H);
 
-  const drawGlassBox = (x, y, w, h) => {
+  // ── Helper: glass box ──
+  const glass = (x, y, w, h, radius = 16) => {
     ctx.save();
     ctx.beginPath();
-    ctx.roundRect(x, y, w, h, 16);
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.03)';
+    ctx.roundRect(x, y, w, h, radius);
+    ctx.fillStyle = 'rgba(255,255,255,0.04)';
     ctx.fill();
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+    ctx.strokeStyle = 'rgba(255,255,255,0.08)';
     ctx.lineWidth = 1;
     ctx.stroke();
     ctx.restore();
   };
 
-  // 1. LEFT CARD
-  drawGlassBox(30, 30, 320, 540);
+  // ── Helper: draw separator line ──
+  const sep = (x1, x2, y) => {
+    ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(x1, y);
+    ctx.lineTo(x2, y);
+    ctx.stroke();
+  };
 
-  // Avatar
+  // ============================
+  //  LEFT PANEL  (x:20 w:340)
+  // ============================
+  const LX = 20;
+  const LW = 340;
+  glass(LX, 20, LW, H - 40);
+
+  const centerX = LX + LW / 2; // 190
+
+  // ── Avatar ──
+  const avatarY = 130;
+  const avatarR = 70;
   try {
-    const avatarImage = await loadImage(avatarURL);
+    const img = await loadImage(avatarURL);
     ctx.save();
     ctx.beginPath();
-    ctx.arc(190, 150, 75, 0, Math.PI * 2);
+    ctx.arc(centerX, avatarY, avatarR, 0, Math.PI * 2);
     ctx.closePath();
     ctx.clip();
-    ctx.drawImage(avatarImage, 115, 75, 150, 150);
+    ctx.drawImage(img, centerX - avatarR, avatarY - avatarR, avatarR * 2, avatarR * 2);
     ctx.restore();
-  } catch (err) {
-    // fallback if avatar fails to load
+  } catch {
     ctx.save();
     ctx.beginPath();
-    ctx.arc(190, 150, 75, 0, Math.PI * 2);
+    ctx.arc(centerX, avatarY, avatarR, 0, Math.PI * 2);
     ctx.fillStyle = '#3f4147';
     ctx.fill();
     ctx.restore();
   }
 
-  // Avatar glowing border
-  ctx.save();
+  // Glow ring
   ctx.beginPath();
-  ctx.arc(190, 150, 75, 0, Math.PI * 2);
-  ctx.strokeStyle = 'rgba(128, 140, 255, 0.6)';
-  ctx.lineWidth = 6;
+  ctx.arc(centerX, avatarY, avatarR + 3, 0, Math.PI * 2);
+  ctx.strokeStyle = 'rgba(130,140,255,0.55)';
+  ctx.lineWidth = 4;
   ctx.stroke();
-  
   ctx.beginPath();
-  ctx.arc(190, 150, 85, 0, Math.PI * 2);
-  ctx.strokeStyle = 'rgba(128, 140, 255, 0.2)'; 
+  ctx.arc(centerX, avatarY, avatarR + 10, 0, Math.PI * 2);
+  ctx.strokeStyle = 'rgba(130,140,255,0.15)';
   ctx.lineWidth = 2;
   ctx.stroke();
-  ctx.restore();
 
-  // Username
-  ctx.fillStyle = '#ffffff';
-  ctx.font = 'bold 36px sans-serif';
+  // ── Username ──
   ctx.textAlign = 'center';
-  ctx.fillText(username, 190, 280);
-
-  // Bio
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
-  ctx.font = '18px sans-serif';
-  ctx.fillText(bio || '—', 190, 310);
-
-  // Separator
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
-  ctx.beginPath();
-  ctx.moveTo(50, 330);
-  ctx.lineTo(330, 330);
-  ctx.stroke();
-
-  // Ranks
-  ctx.textAlign = 'left';
-  ctx.font = '18px sans-serif';
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
-  ctx.fillText('🎙️ Топ по онлайну', 60, 380);
   ctx.fillStyle = '#ffffff';
-  ctx.textAlign = 'right';
-  ctx.font = 'bold 20px sans-serif';
-  ctx.fillText(`#${onlineRank}`, 320, 380);
+  ctx.font = 'bold 28px Inter';
+  ctx.fillText(truncText(ctx, username, LW - 40), centerX, avatarY + avatarR + 40);
 
-  ctx.textAlign = 'left';
-  ctx.font = '18px sans-serif';
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
-  ctx.fillText('💰 Топ по балансу', 60, 430);
-  ctx.fillStyle = '#ffffff';
-  ctx.textAlign = 'right';
-  ctx.font = 'bold 20px sans-serif';
-  ctx.fillText(`#${balanceRank}`, 320, 430);
+  // ── Bio ──
+  ctx.fillStyle = '#f0a030';
+  ctx.font = '16px Inter';
+  ctx.fillText(truncText(ctx, bio || '—', LW - 60), centerX, avatarY + avatarR + 65);
 
-  // Separator
-  ctx.beginPath();
-  ctx.moveTo(50, 460);
-  ctx.lineTo(330, 460);
-  ctx.stroke();
+  // ── Separator ──
+  const rankStartY = avatarY + avatarR + 90;
+  sep(LX + 25, LX + LW - 25, rankStartY);
 
-  // Balance
-  ctx.textAlign = 'left';
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
-  ctx.fillText('🦋 Монеты', 60, 500);
-  ctx.fillStyle = '#ffffff'; 
-  ctx.textAlign = 'right';
-  ctx.font = '20px sans-serif';
-  ctx.fillText(balance.toLocaleString('ru-RU'), 320, 500);
-
-  ctx.textAlign = 'left';
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
-  ctx.fillText('⭐ Звёзды', 60, 540);
-  ctx.fillStyle = '#ffffff'; 
-  ctx.textAlign = 'right';
-  ctx.fillText(stars.toLocaleString('ru-RU'), 320, 540);
-
-
-  // 2. RIGHT BLOCKS
-  // Top Left: Marriages
-  drawGlassBox(370, 30, 300, 110);
-  ctx.textAlign = 'left';
-  ctx.fillStyle = '#ffffff';
-  ctx.font = 'bold 22px sans-serif';
-  ctx.fillText('Отношения', 400, 70);
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
-  ctx.font = '16px sans-serif';
-  ctx.fillText(marriageText.slice(0, 30) + (marriageText.length > 30 ? '...' : ''), 400, 100);
-
-  // Top Right: Stats List
-  drawGlassBox(690, 30, 280, 240);
-  const startY = 80;
-  const gap = 45;
-
-  const labels = [
-    { text: '🎙️  Голос. онлайн', val: voiceOnlineFormatted },
-    { text: '💬  Сообщения', val: messages.toString() },
-    { text: '📦  Кейсы', val: cases.toString() },
-    { text: '💼  Личные роли', val: personalRoles.toString() }
-  ];
-
-  for (let i = 0; i < labels.length; i++) {
+  // ── Ranks ──
+  const drawRankRow = (icon, label, value, y) => {
     ctx.textAlign = 'left';
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
-    ctx.font = '16px sans-serif';
-    ctx.fillText(labels[i].text, 710, startY + i * gap);
-    
+    ctx.fillStyle = 'rgba(255,255,255,0.5)';
+    ctx.font = '16px Inter';
+    ctx.fillText(`${icon}  ${label}`, LX + 40, y);
     ctx.textAlign = 'right';
     ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 16px sans-serif';
-    ctx.fillText(labels[i].val, 950, startY + i * gap);
-  }
+    ctx.font = 'bold 18px Inter';
+    ctx.fillText(value, LX + LW - 40, y);
+  };
 
-  // Middle Left: Cases Command Hint
-  drawGlassBox(370, 160, 300, 110);
+  drawRankRow('⊙', 'Топ по онлайну', `#${onlineRank}`, rankStartY + 35);
+  drawRankRow('♡', 'Топ по балансу', `#${balanceRank}`, rankStartY + 75);
+
+  // ── Separator ──
+  const balY = rankStartY + 105;
+  sep(LX + 25, LX + LW - 25, balY);
+
+  // ── Balance rows ──
+  const drawBalRow = (icon, value, y) => {
+    ctx.textAlign = 'left';
+    ctx.fillStyle = 'rgba(255,255,255,0.5)';
+    ctx.font = '16px Inter';
+    ctx.fillText(icon, LX + 40, y);
+    ctx.textAlign = 'right';
+    ctx.fillStyle = '#f0a030';
+    ctx.font = 'bold 18px Inter';
+    ctx.fillText(value, LX + LW - 40, y);
+  };
+
+  drawBalRow('⚬  Монеты', balance.toLocaleString('ru-RU'), balY + 35);
+  drawBalRow('○  Звёзды', stars.toLocaleString('ru-RU'), balY + 75);
+
+  // ============================
+  //  RIGHT PANEL  (x:380)
+  // ============================
+  const RX = 380;
+  const RW = W - RX - 20; // 624
+  const gap = 12;
+
+  // ── Row 1: Marriage + Stats (side by side) ──
+  const r1Y = 20;
+  const r1H = 120;
+  const midW = 290;
+  const statW = RW - midW - gap;
+
+  // Marriage box
+  glass(RX, r1Y, midW, r1H);
   ctx.textAlign = 'left';
   ctx.fillStyle = '#ffffff';
-  ctx.font = 'bold 22px sans-serif';
-  ctx.fillText('/case open', 400, 200);
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
-  ctx.font = '16px sans-serif';
-  ctx.fillText('Скорее открывай кейсы', 400, 230);
-  
-  // Bottom: Level Progress bar
-  drawGlassBox(370, 290, 600, 280);
-  
-  // draw Arc
-  ctx.save();
-  const arcX = 670;
-  const arcY = 490;
-  const arcRadius = 130;
-  // Background Arc
-  ctx.beginPath();
-  ctx.arc(arcX, arcY, arcRadius, Math.PI, 0);
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
-  ctx.lineWidth = 15;
-  ctx.lineCap = 'round';
-  ctx.stroke();
+  ctx.font = 'bold 18px Inter';
+  ctx.fillText('Отношения', RX + 20, r1Y + 35);
+  ctx.fillStyle = 'rgba(255,255,255,0.5)';
+  ctx.font = '15px Inter';
+  const mText = marriageText.length > 28 ? marriageText.slice(0, 28) + '...' : marriageText;
+  ctx.fillText(mText, RX + 20, r1Y + 60);
 
-  // Foreground Arc
-  ctx.beginPath();
-  const progress = Math.min(Math.max(xp / (nextXp || 1), 0), 1);
-  ctx.arc(arcX, arcY, arcRadius, Math.PI, Math.PI + Math.PI * progress);
-  ctx.strokeStyle = '#ffffff'; 
-  ctx.lineWidth = 15;
-  ctx.lineCap = 'round';
-  ctx.stroke();
-  
-  // Level Text
+  // Stats box (right side of row 1 + row 2)
+  const statsBoxX = RX + midW + gap;
+  const statsBoxH = r1H * 2 + gap;
+  glass(statsBoxX, r1Y, statW, statsBoxH);
+
+  const statLabels = [
+    { label: 'Голосовой онлайн', val: voiceOnlineFormatted },
+    { label: 'Кол-во сообщений', val: messages.toString() },
+    { label: 'Кол-во кейсов', val: cases.toString() },
+    { label: 'Кол-во личных ролей', val: personalRoles.toString() }
+  ];
+
+  const statStartY = r1Y + 35;
+  const statGap = (statsBoxH - 40) / statLabels.length;
+
+  for (let i = 0; i < statLabels.length; i++) {
+    const sy = statStartY + i * statGap;
+    ctx.textAlign = 'left';
+    ctx.fillStyle = 'rgba(255,255,255,0.5)';
+    ctx.font = '13px Inter';
+    ctx.fillText(statLabels[i].label, statsBoxX + 15, sy);
+    ctx.textAlign = 'right';
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 15px Inter';
+    ctx.fillText(statLabels[i].val, statsBoxX + statW - 15, sy);
+  }
+
+  // ── Row 2: Hints (under Marriage) ──
+  const r2Y = r1Y + r1H + gap;
+  const r2H = r1H;
+  const hintW = (midW - gap) / 2;
+
+  // /case open hint
+  glass(RX, r2Y, hintW, r2H);
+  ctx.textAlign = 'left';
+  ctx.fillStyle = '#ffffff';
+  ctx.font = 'bold 16px Inter';
+  ctx.fillText('/case open', RX + 15, r2Y + 40);
+  ctx.fillStyle = 'rgba(255,255,255,0.4)';
+  ctx.font = '12px Inter';
+  ctx.fillText('Открывай кейсы', RX + 15, r2Y + 62);
+
+  // /timely hint
+  glass(RX + hintW + gap, r2Y, hintW, r2H);
+  ctx.textAlign = 'left';
+  ctx.fillStyle = '#ffffff';
+  ctx.font = 'bold 16px Inter';
+  ctx.fillText('/timely', RX + hintW + gap + 15, r2Y + 40);
+  ctx.fillStyle = 'rgba(255,255,255,0.4)';
+  ctx.font = '12px Inter';
+  ctx.fillText('Забирай награду', RX + hintW + gap + 15, r2Y + 62);
+
+  // ── Row 3: Level block (full width) ──
+  const r3Y = r2Y + r2H + gap;
+  const r3H = H - 20 - r3Y;
+  glass(RX, r3Y, RW, r3H);
+
+  // Level number (big & centered)
+  const lvlCenterX = RX + RW / 2;
+  const lvlCenterY = r3Y + r3H / 2;
+
   ctx.textAlign = 'center';
   ctx.fillStyle = '#ffffff';
-  ctx.font = 'bold 64px sans-serif';
-  ctx.fillText(`${level}`, arcX, arcY - 30);
-  ctx.font = '18px sans-serif';
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
-  ctx.fillText('УРОВЕНЬ', arcX, arcY);
+  ctx.font = `bold ${level > 99 ? 80 : 100}px Inter`;
+  ctx.fillText(`${level}`, lvlCenterX, lvlCenterY + 15);
 
-  // Xp text under level
-  ctx.font = '14px sans-serif';
-  ctx.fillText(`${xp} / ${nextXp} XP`, arcX, arcY + 25);
-  ctx.restore();
+  ctx.fillStyle = 'rgba(255,255,255,0.4)';
+  ctx.font = '18px Inter';
+  ctx.fillText('УРОВЕНЬ', lvlCenterX, lvlCenterY + 50);
+
+  // XP progress bar at bottom of level block
+  const barW = RW - 60;
+  const barH = 10;
+  const barX = RX + 30;
+  const barY = r3Y + r3H - 35;
+
+  // BG bar
+  ctx.beginPath();
+  ctx.roundRect(barX, barY, barW, barH, 5);
+  ctx.fillStyle = 'rgba(255,255,255,0.1)';
+  ctx.fill();
+
+  // FG bar
+  const progress = Math.min(Math.max(xp / (nextXp || 1), 0), 1);
+  if (progress > 0) {
+    ctx.beginPath();
+    ctx.roundRect(barX, barY, barW * progress, barH, 5);
+    ctx.fillStyle = '#ffffff';
+    ctx.fill();
+  }
+
+  // XP text
+  ctx.fillStyle = 'rgba(255,255,255,0.5)';
+  ctx.font = '13px Inter';
+  ctx.textAlign = 'center';
+  ctx.fillText(`${xp} / ${nextXp} XP`, lvlCenterX, barY - 8);
 
   return await canvas.encode('png');
+}
+
+function truncText(ctx, text, maxWidth) {
+  if (ctx.measureText(text).width <= maxWidth) return text;
+  let t = text;
+  while (ctx.measureText(t + '…').width > maxWidth && t.length > 0) {
+    t = t.slice(0, -1);
+  }
+  return t + '…';
 }
