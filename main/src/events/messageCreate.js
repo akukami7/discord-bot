@@ -10,29 +10,34 @@ export default {
     const guildId = message.guild.id;
     const userId = message.author.id;
 
+    // Track message count regardless of XP cooldown
+    const userMsg = await User.findOneAndUpdate(
+      { guildId, userId },
+      { $inc: { messages: 1 } },
+      { upsert: true, new: true }
+    );
+
     // XP Cooldown check using CooldownManager
     const cooldownKey = `${guildId}-${userId}`;
     if (client.xpCooldowns.isOnCooldown(cooldownKey, client.config.xpCooldown)) return;
 
     const xpGain = randomInt(client.config.xpMin, client.config.xpMax);
 
-    const user = await User.findOneAndUpdate(
-      { guildId, userId },
-      { $inc: { xp: xpGain, totalXp: xpGain } },
-      { upsert: true, new: true }
-    );
-
+    userMsg.xp += xpGain;
+    userMsg.totalXp += xpGain;
+    
     // Check level up
-    const xpNeeded = xpForLevel(user.level);
-    if (user.xp >= xpNeeded) {
-      user.xp -= xpNeeded;
-      user.level += 1;
-      await user.save();
-
+    const xpNeeded = xpForLevel(userMsg.level);
+    if (userMsg.xp >= xpNeeded) {
+      userMsg.xp -= xpNeeded;
+      userMsg.level += 1;
+      
       // Level up notification
       message.channel.send({
-        content: `🎉 ${message.author} достиг **${user.level}** уровня!`
+        content: `🎉 ${message.author} достиг **${userMsg.level}** уровня!`
       }).catch(() => {});
     }
+    
+    await userMsg.save();
   },
 };
