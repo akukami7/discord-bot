@@ -110,24 +110,13 @@ export default {
 
     await interaction.deferReply();
 
-    const [mainUser, caseUser] = await Promise.all([
-      MainUser.findOne({ guildId, userId }),
-      CaseUser.findOne({ guildId, userId }),
-    ]);
-
-    const balance = mainUser?.balance ?? 0;
+    const caseUser = await CaseUser.findOne({ guildId, userId });
     const casesOpened = caseUser?.cases ?? 0;
 
     const embed = new EmbedBuilder().setColor(0x2B2D31)
-      .setTitle(`🎰 Баланс — ${interaction.user.displayName}`)
-      .setThumbnail(interaction.user.displayAvatarURL({ size: 128 }))
-      .addFields(
-        { name: '🦋 Баланс', value: `**${formatNumber(balance)}**`, inline: true },
-        { name: '📦 Кейсов открыто', value: `**${formatNumber(casesOpened)}**`, inline: true },
-        { name: '💰 Стоимость кейса', value: `**${formatNumber(CASE_PRICE)}** 🦋`, inline: true },
-      )
-      .setColor(0x2B2D31)
-      .setFooter({ text: `Angelss Cases • ${new Date().toLocaleDateString('ru-RU')}` });
+      .setTitle(`Баланс кейсов — ${interaction.user.displayName}`)
+      .setDescription(`> Количество кейсов:\n\`\`\`\n${formatNumber(casesOpened)}\n\`\`\``)
+      .setThumbnail('https://i.imgur.com/rD9I6v1.jpeg');
 
     await interaction.editReply({ embeds: [embed] });
   },
