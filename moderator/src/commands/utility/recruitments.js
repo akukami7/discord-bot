@@ -43,13 +43,13 @@ export default {
       const fastest = sorted[0];
       const slowest = sorted[sorted.length - 1];
 
-      const embed = new EmbedBuilder()
+      const embed = new EmbedBuilder().setColor(0x2B2D31)
         .setColor(client.config.embedColor)
         .setTitle('⏱️ Среднее время реакции на наборы')
         .addFields(
           { name: 'Среднее время', value: `**${formatTime(Math.floor(avgResponseTime / 1000))}**`, inline: true },
           { name: 'Всего наборов', value: `**${recruitments.length}**`, inline: true },
-          { name: 'Период', value: `Последние 100 записей`, inline: true },
+          { name: 'Период', value: 'Последние 100 записей', inline: true },
           { name: 'Самое быстрое', value: `${formatTime(Math.floor(fastest.responseTime / 1000))} • ${fastest.responderName || 'Unknown'}`, inline: false },
           { name: 'Самое медленное', value: `${formatTime(Math.floor(slowest.responseTime / 1000))} • ${slowest.responderName || 'Unknown'}`, inline: false }
         )
@@ -64,7 +64,7 @@ export default {
         Recruitment.countDocuments({ guildId, status: 'rejected' }),
       ]);
 
-      const embed = new EmbedBuilder()
+      const embed = new EmbedBuilder().setColor(0x2B2D31)
         .setColor(client.config.embedColor)
         .setTitle('📊 Статистика наборов')
         .addFields(

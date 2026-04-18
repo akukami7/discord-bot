@@ -10,4 +10,4 @@ const inventorySchema = new mongoose.Schema({
 
 inventorySchema.index({ guildId: 1, userId: 1 });
 
-export default mongoose.model('MainInventory', inventorySchema);
+export default mongoose.models.MainInventory || mongoose.model('MainInventory', inventorySchema);

@@ -39,7 +39,7 @@ export default {
       return interaction.reply({ content: 'Нельзя использовать реакцию на себе!', ephemeral: true });
     }
 
-    const embed = new EmbedBuilder()
+    const embed = new EmbedBuilder().setColor(0x2B2D31)
       .setDescription(`${reaction.emoji} ${reaction.text(interaction.user, target)}`)
       .setColor(client.config.embedAccent);
 

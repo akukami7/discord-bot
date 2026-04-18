@@ -25,4 +25,4 @@ moderatorActionSchema.index({ guildId: 1, targetId: 1, createdAt: -1 });
 moderatorActionSchema.index({ guildId: 1, moderatorId: 1, createdAt: -1 });
 moderatorActionSchema.index({ guildId: 1, createdAt: -1 });
 
-export default mongoose.model('ModeratorAction', moderatorActionSchema);
+export default mongoose.models.ModeratorAction || mongoose.model('ModeratorAction', moderatorActionSchema);

@@ -32,4 +32,4 @@ userSchema.index({ guildId: 1, balance: -1 });
 userSchema.index({ guildId: 1, level: -1, totalXp: -1 });
 userSchema.index({ guildId: 1, voiceOnline: -1 });
 
-export default mongoose.model('MainUser', userSchema);
+export default mongoose.models.MainUser || mongoose.model('MainUser', userSchema);

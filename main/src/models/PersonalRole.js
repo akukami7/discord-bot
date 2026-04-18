@@ -12,4 +12,4 @@ const personalRoleSchema = new mongoose.Schema({
 
 personalRoleSchema.index({ guildId: 1, userId: 1 }, { unique: true });
 
-export default mongoose.model('MainPersonalRole', personalRoleSchema);
+export default mongoose.models.MainPersonalRole || mongoose.model('MainPersonalRole', personalRoleSchema);

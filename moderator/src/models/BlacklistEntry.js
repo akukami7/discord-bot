@@ -25,4 +25,4 @@ const blacklistEntrySchema = new mongoose.Schema({
 blacklistEntrySchema.index({ guildId: 1, userId: 1, isActive: 1 });
 blacklistEntrySchema.index({ guildId: 1, addedAt: -1 });
 
-export default mongoose.model('BlacklistEntry', blacklistEntrySchema);
+export default mongoose.models.BlacklistEntry || mongoose.model('BlacklistEntry', blacklistEntrySchema);

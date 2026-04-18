@@ -30,7 +30,7 @@ export default {
       description: `Конвертация ${starAmount} ⭐ → ${coinAmount} 💰`,
     });
 
-    const embed = new EmbedBuilder()
+    const embed = new EmbedBuilder().setColor(0x2B2D31)
       .setDescription(`✅ Конвертировано **${formatNumber(starAmount)}** ⭐ → **${formatNumber(coinAmount)}** 💰\n(Курс: 1⭐ = ${client.config.starToCoinRate}💰)`)
       .setColor(0x57F287);
 

@@ -40,7 +40,7 @@ export default {
         const ticketId = `ticket-${Math.floor(Math.random() * 90000) + 10000}`;
         const categoryId = process.env.TICKETS_CATEGORY_ID;
 
-        const userEmbed1 = new EmbedBuilder()
+        const userEmbed1 = new EmbedBuilder().setColor(0x2B2D31)
           .setAuthor({ name: 'Служба поддержки Angelss', iconURL: guild.iconURL() || undefined })
           .setDescription('**Ваше обращение успешно отправлено**\nОжидайте...\n\nНапишите ваш вопрос прямо сюда в ЛС.')
           .setColor(client.config.embedColor);
@@ -77,7 +77,7 @@ export default {
           const ticket = new Ticket({ ticketId, guildId: guild.id, channelId: channel.id, creatorId: user.id, status: 'pending' });
           await ticket.save();
 
-          const staffEmbed = new EmbedBuilder()
+          const staffEmbed = new EmbedBuilder().setColor(0x2B2D31)
             .setTitle('Новое обращение (Ожидает принятия)')
             .setDescription(`Пользователь ${user} (${user.id}) открыл обращение через панель.`)
             .setColor(client.config.embedColor)
@@ -100,7 +100,7 @@ export default {
 
       // User clicked "Interrupt Dialog" in DM
       if (interaction.customId === 'interrupt_dialog') {
-        const embed = new EmbedBuilder()
+        const embed = new EmbedBuilder().setColor(0x2B2D31)
           .setTitle('Прервать диалог')
           .setDescription(`${interaction.user}, Вы уверены, что хотите прервать диалог? Если Вы будете прерывать диалог без веской причины, то можете получить блокировку в нашей службе поддержки\nДля согласия нажмите на ✅, для отказа на ❌`)
           .setColor(client.config.embedColor);
@@ -149,7 +149,7 @@ export default {
         const user = await client.users.fetch(ticket.creatorId).catch(() => null);
         if (user) {
             const guild = client.guilds.cache.get(ticket.guildId);
-            const userEmbed2 = new EmbedBuilder()
+            const userEmbed2 = new EmbedBuilder().setColor(0x2B2D31)
                 .setAuthor({ name: 'Служба поддержки Angelss', iconURL: guild ? guild.iconURL() : undefined })
                 .setDescription('**Пиши сообщения прямо сюда**\nСпасибо за обращение в нашу службу поддержки.\nСейчас постараемся решить твой вопрос, оставайся на связи.')
                 .setColor(client.config.embedColor);
@@ -180,13 +180,13 @@ export default {
 
 async function closeTicket(interaction, client, ticket, closerId, isClosedByUser, isDeclined = false) {
   // Generate Transcript
-  let guild, channel;
+  let channel;
 
   // We get guild using ticket's guildId
-  guild = client.guilds.cache.get(ticket.guildId);
+  const guild = client.guilds.cache.get(ticket.guildId);
   if (guild) channel = guild.channels.cache.get(ticket.channelId);
 
-  let transcriptText = "Transcript could not be generated.";
+  let transcriptText = 'Transcript could not be generated.';
   if (channel) {
     try {
       const messages = await channel.messages.fetch({ limit: 100 });
@@ -219,7 +219,7 @@ async function closeTicket(interaction, client, ticket, closerId, isClosedByUser
   // Send the user the final message
   const user = await client.users.fetch(ticket.creatorId).catch(() => null);
   if (user) {
-    const userEmbed = new EmbedBuilder()
+    const userEmbed = new EmbedBuilder().setColor(0x2B2D31)
       .setAuthor({ name: 'Служба поддержки Angelss', iconURL: guild ? guild.iconURL() : undefined })
       .setDescription(isDeclined ? '**Ваше обращение было отклонено**' : '**Диалог завершен**')
       .setColor(client.config.embedColor);
@@ -231,7 +231,7 @@ async function closeTicket(interaction, client, ticket, closerId, isClosedByUser
   if (guild && logChannelId) {
     const logChannel = guild.channels.cache.get(logChannelId);
     if (logChannel) {
-      const logEmbed = new EmbedBuilder()
+      const logEmbed = new EmbedBuilder().setColor(0x2B2D31)
         .setTitle('🔒 Тикет закрыт (Modmail)')
         .addFields(
           { name: 'ID Тикета', value: ticket.ticketId, inline: true },

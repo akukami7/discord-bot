@@ -30,7 +30,7 @@ export default {
       return `**${i + 1}.** \`${oldNick}\` → \`${newNick}\` • ${h.changedBy === 'self' ? 'сам' : h.moderatorName} • ${new Date(h.changedAt).toLocaleString('ru-RU')}`;
     }).join('\n');
 
-    const embed = new EmbedBuilder()
+    const embed = new EmbedBuilder().setColor(0x2B2D31)
       .setColor(client.config.embedColor)
       .setTitle(`🏷️ История никнеймов: ${user.username}`)
       .setDescription(description)

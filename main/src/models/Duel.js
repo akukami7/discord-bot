@@ -20,4 +20,4 @@ const duelSchema = new mongoose.Schema({
 duelSchema.index({ guildId: 1, challengerId: 1, status: 1 });
 duelSchema.index({ guildId: 1, opponentId: 1, status: 1 });
 
-export default mongoose.model('MainDuel', duelSchema);
+export default mongoose.models.MainDuel || mongoose.model('MainDuel', duelSchema);

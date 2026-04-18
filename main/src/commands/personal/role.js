@@ -57,7 +57,7 @@ export default {
 
         await PersonalRole.create({ guildId, userId, roleId: role.id, name, color });
 
-        const embed = new EmbedBuilder()
+        const embed = new EmbedBuilder().setColor(0x2B2D31)
           .setDescription(`✅ Личная роль **${name}** создана!\nЦвет: \`${color}\``)
           .setColor(color);
 
@@ -75,7 +75,7 @@ export default {
 
       const role = interaction.guild.roles.cache.get(pr.roleId);
 
-      const embed = new EmbedBuilder()
+      const embed = new EmbedBuilder().setColor(0x2B2D31)
         .setTitle('🎭 Личная роль')
         .addFields(
           { name: 'Название', value: pr.name, inline: true },

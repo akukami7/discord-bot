@@ -49,7 +49,7 @@ async function showPage(interaction, client, target, page, isEdit = false) {
     return `\`${num}.\` ${t.description} (**${sign}${formatNumber(t.amount)}** 💰) — ${date}`;
   });
 
-  const embed = new EmbedBuilder()
+  const embed = new EmbedBuilder().setColor(0x2B2D31)
     .setAuthor({ name: `Транзакции ${target.displayName}`, iconURL: target.displayAvatarURL() })
     .setDescription(lines.length ? lines.join('\n') : 'Нет транзакций.')
     .setFooter({ text: `Страница ${page + 1}/${totalPages} • Всего: ${total}` })

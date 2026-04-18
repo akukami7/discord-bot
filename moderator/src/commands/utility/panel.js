@@ -37,7 +37,7 @@ export default {
           .setStyle(ButtonStyle.Secondary)
       );
 
-    const embed = new EmbedBuilder()
+    const embed = new EmbedBuilder().setColor(0x2B2D31)
       .setColor(client.config.embedAccent)
       .setTitle('🎛️ Панель администраторов')
       .setDescription('Выберите действие с помощью кнопок ниже.')

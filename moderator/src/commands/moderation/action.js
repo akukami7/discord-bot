@@ -106,7 +106,7 @@ export default {
         return interaction.editReply({ content: 'ℹ️ Нет действий у этого модератора.' });
       }
 
-      const embed = new EmbedBuilder()
+      const embed = new EmbedBuilder().setColor(0x2B2D31)
         .setColor(client.config.embedColor)
         .setTitle(`📋 Действия модератора ${moderator.username}`)
         .setDescription(actions.map((a, i) =>
@@ -118,7 +118,7 @@ export default {
     }
 
     const user = interaction.options.getUser('user');
-    const reason = interaction.options.getString('reason');
+    let reason = interaction.options.getString('reason');
     const moderator = interaction.user;
 
     // Check if user is higher in hierarchy
@@ -127,22 +127,24 @@ export default {
       return interaction.editReply({ content: '❌ Вы не можете взаимодействовать с пользователем выше вас в иерархии.' });
     }
 
-    let actionType = subcommand;
+    const actionType = subcommand;
     let duration = 0;
     let actionResult = '';
 
     try {
       switch (subcommand) {
-        case 'warn':
+        case 'warn': {
           actionResult = `⚠️ Пользователь ${user} получил предупреждение.`;
           break;
+        }
 
-        case 'mute':
+        case 'mute': {
           // Note: Muting requires a mute role, this is a simplified version
           actionResult = `🔇 Пользователь ${user} замучен.`;
           break;
+        }
 
-        case 'timeout':
+        case 'timeout': {
           const durationStr = interaction.options.getString('duration');
           duration = parseDuration(durationStr);
           if (duration === 0) {
@@ -151,23 +153,27 @@ export default {
           await targetMember.timeout(duration, reason);
           actionResult = `⏱️ Пользователь ${user} получил таймаут на ${durationStr}.`;
           break;
+        }
 
-        case 'kick':
+        case 'kick': {
           await targetMember.kick(reason);
           actionResult = `👢 Пользователь ${user} кикнут.`;
           break;
+        }
 
-        case 'ban':
+        case 'ban': {
           const banDuration = interaction.options.getString('duration');
           await targetMember.ban({ reason, deleteMessageSeconds: 7 * 24 * 60 * 60 });
           actionResult = `🔨 Пользователь ${user} забанен.`;
           break;
+        }
 
-        case 'note':
+        case 'note': {
           const note = interaction.options.getString('note');
           actionResult = `📝 Добавлена заметка о ${user}.`;
           reason = note; // Use note as reason for logging
           break;
+        }
       }
 
       // Log action in database
@@ -194,7 +200,7 @@ export default {
         { upsert: true, new: true }
       );
 
-      const embed = new EmbedBuilder()
+      const embed = new EmbedBuilder().setColor(0x2B2D31)
         .setColor(0x00FF00)
         .setTitle('✅ Действие выполнено')
         .setDescription(actionResult)

@@ -45,7 +45,7 @@ export default {
       channelId: interaction.channel.id,
     });
 
-    const embed = new EmbedBuilder()
+    const embed = new EmbedBuilder().setColor(0x2B2D31)
       .setColor(client.config.embedAccent)
       .setTitle('📝 Жалоба отправлена')
       .setDescription('Ваша жалоба успешно отправлена и будет рассмотрена модераторами.')
@@ -63,7 +63,7 @@ export default {
     if (reportChannelId) {
       const channel = await client.channels.fetch(reportChannelId).catch(() => null);
       if (channel && (channel.type === ChannelType.GuildText || channel.type === ChannelType.GuildAnnouncement)) {
-        const reportEmbed = new EmbedBuilder()
+        const reportEmbed = new EmbedBuilder().setColor(0x2B2D31)
           .setColor(0xFF6B6B)
           .setTitle('🚨 Новая жалоба')
           .addFields(

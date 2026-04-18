@@ -20,13 +20,13 @@ export default {
           Routes.applicationGuildCommands(client.user.id, process.env.GUILD_ID),
           { body: commands },
         );
-        console.log(chalk.green(`✓ Successfully reloaded guild (/) commands.`));
+        console.log(chalk.green('✓ Successfully reloaded guild (/) commands.'));
       } else {
         await rest.put(
           Routes.applicationCommands(client.user.id),
           { body: commands },
         );
-        console.log(chalk.green(`✓ Successfully reloaded global (/) commands.`));
+        console.log(chalk.green('✓ Successfully reloaded global (/) commands.'));
       }
     } catch (error) {
       console.error(chalk.red('Error registering commands:'), error);

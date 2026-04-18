@@ -19,4 +19,4 @@ const messageStatsSchema = new mongoose.Schema({
 messageStatsSchema.index({ guildId: 1, userId: 1 }, { unique: true });
 messageStatsSchema.index({ guildId: 1, messagesCount: -1 });
 
-export default mongoose.model('MessageStats', messageStatsSchema);
+export default mongoose.models.MessageStats || mongoose.model('MessageStats', messageStatsSchema);

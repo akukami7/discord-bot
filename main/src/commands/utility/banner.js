@@ -18,7 +18,7 @@ export default {
       return interaction.editReply({ content: `У ${user.displayName} нет баннера.` });
     }
 
-    const embed = new EmbedBuilder()
+    const embed = new EmbedBuilder().setColor(0x2B2D31)
       .setTitle(`Баннер ${user.displayName}`)
       .setImage(banner)
       .setColor(client.config.embedAccent);

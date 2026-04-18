@@ -137,7 +137,7 @@ async function handleBlacklist(interaction, subcommand, guildId) {
         expiresAt,
       });
 
-      const embed = new EmbedBuilder()
+      const embed = new EmbedBuilder().setColor(0x2B2D31)
         .setColor(0xFF0000)
         .setTitle('🚫 Добавлен в чёрный список')
         .setDescription(`Пользователь **${user.username}** добавлен в чёрный список.`)
@@ -164,7 +164,7 @@ async function handleBlacklist(interaction, subcommand, guildId) {
       entry.notes = reason || entry.notes;
       await entry.save();
 
-      const embed = new EmbedBuilder()
+      const embed = new EmbedBuilder().setColor(0x2B2D31)
         .setColor(0x00FF00)
         .setTitle('✅ Убран из чёрного списка')
         .setDescription(`Пользователь **${user.username}** убран из чёрного списка.`)
@@ -191,7 +191,7 @@ async function handleBlacklist(interaction, subcommand, guildId) {
         `**${i + 1}.** ${e.reason} • ${e.addedByName} • ${formatDate(e.addedAt)}${e.expiresAt ? ` • Истекает: ${formatDate(e.expiresAt)}` : ''}`
       ).join('\n');
 
-      const embed = new EmbedBuilder()
+      const embed = new EmbedBuilder().setColor(0x2B2D31)
         .setColor(0xFF0000)
         .setTitle(`🚫 Чёрный список: ${user.username}`)
         .setDescription(description)
@@ -212,7 +212,7 @@ async function handleBlacklist(interaction, subcommand, guildId) {
         `**${i + 1}.** ${e.username} • ${e.reason} • ${e.addedByName} • ${formatDate(e.addedAt)}`
       ).join('\n');
 
-      const embed = new EmbedBuilder()
+      const embed = new EmbedBuilder().setColor(0x2B2D31)
         .setColor(0xFF0000)
         .setTitle('🚫 Чёрный список')
         .setDescription(description.length > 4096 ? description.slice(0, 4093) + '...' : description)
@@ -249,7 +249,7 @@ async function handlePromote(interaction, guildId, Staff) {
   staff.rankLevel = currentRankIndex + 2;
   await staff.save();
 
-  const embed = new EmbedBuilder()
+  const embed = new EmbedBuilder().setColor(0x2B2D31)
     .setColor(0x00FF00)
     .setTitle('⬆️ Повышение')
     .setDescription(`Пользователь **${user.username}** повышен до **${newRank}**.`)
@@ -261,7 +261,7 @@ async function handlePromote(interaction, guildId, Staff) {
 async function handleDemote(interaction, guildId, Staff) {
   const user = interaction.options.getUser('user');
 
-  let staff = await Staff.findOne({ guildId, userId: user.id });
+  const staff = await Staff.findOne({ guildId, userId: user.id });
   if (!staff) {
     return interaction.editReply({ content: `ℹ️ Пользователь ${user} не в составе.` });
   }
@@ -284,7 +284,7 @@ async function handleDemote(interaction, guildId, Staff) {
   staff.rankLevel = currentRankIndex;
   await staff.save();
 
-  const embed = new EmbedBuilder()
+  const embed = new EmbedBuilder().setColor(0x2B2D31)
     .setColor(0xFF0000)
     .setTitle('⬇️ Понижение')
     .setDescription(`Пользователь **${user.username}** понижен до **${newRank}**.`)
@@ -301,8 +301,7 @@ async function handleInfo(interaction, guildId, Staff) {
     return interaction.editReply({ content: `ℹ️ Пользователь ${user} не в составе.` });
   }
 
-  const embed = new EmbedBuilder()
-    .setColor(client?.config?.embedColor || 0x2f3136)
+  const embed = new EmbedBuilder().setColor(0x2B2D31)
     .setTitle(`📋 Информация: ${user.username}`)
     .addFields(
       { name: 'Ранг', value: staff.rank, inline: true },
@@ -328,8 +327,7 @@ async function handleProfile(interaction, guildId, Staff) {
     return interaction.editReply({ content: `ℹ️ Пользователь ${user} не в составе.` });
   }
 
-  const embed = new EmbedBuilder()
-    .setColor(client?.config?.embedAccent || 0x5865F2)
+  const embed = new EmbedBuilder().setColor(0x2B2D31)
     .setTitle(`👤 Профиль: ${user.username}`)
     .setThumbnail(user.displayAvatarURL())
     .addFields(

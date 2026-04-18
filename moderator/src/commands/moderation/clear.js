@@ -33,7 +33,7 @@ export default {
 
       const deleted = await interaction.channel.bulkDelete(filteredMessages, true);
 
-      const embed = new EmbedBuilder()
+      const embed = new EmbedBuilder().setColor(0x2B2D31)
         .setColor(0x00FF00)
         .setTitle('🧹 Сообщения удалены')
         .setDescription(`Удалено **${deleted.size}** сообщений${targetUser ? ` от ${targetUser}` : ''}.`)
@@ -45,7 +45,9 @@ export default {
       setTimeout(async () => {
         try {
           await interaction.deleteReply();
-        } catch (e) {}
+        } catch (e) {
+            // ignore cleanup error
+        }
       }, 5000);
 
     } catch (error) {

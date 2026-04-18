@@ -42,7 +42,7 @@ export default {
             Report.countDocuments({ guildId }),
           ]);
 
-          const embed = new EmbedBuilder()
+          const embed = new EmbedBuilder().setColor(0x2B2D31)
             .setColor(client.config.embedColor)
             .setTitle('📊 Статистика сервера')
             .addFields(
@@ -72,7 +72,7 @@ export default {
             return `**${i + 1}.** ${username} • ${s.rank} • ${s.points} баллов`;
           }).join('\n');
 
-          const embed = new EmbedBuilder()
+          const embed = new EmbedBuilder().setColor(0x2B2D31)
             .setColor(client.config.embedColor)
             .setTitle('👥 Состав модераторов')
             .setDescription(description)
@@ -95,7 +95,7 @@ export default {
             `**${i + 1}.** ${r.reportedName} от ${r.reporterName} • ${r.reason} • <t:${Math.floor(r.createdAt.getTime() / 1000)}:R>`
           ).join('\n');
 
-          const embed = new EmbedBuilder()
+          const embed = new EmbedBuilder().setColor(0x2B2D31)
             .setColor(0xFF6B6B)
             .setTitle('📝 Ожидающие жалобы')
             .setDescription(description)
@@ -118,7 +118,7 @@ export default {
             `**${i + 1}.** ${a.type} • ${a.targetName} • ${a.moderatorName} • <t:${Math.floor(a.createdAt.getTime() / 1000)}:R>`
           ).join('\n');
 
-          const embed = new EmbedBuilder()
+          const embed = new EmbedBuilder().setColor(0x2B2D31)
             .setColor(client.config.embedColor)
             .setTitle('🛡️ Последние действия')
             .setDescription(description)
@@ -141,7 +141,7 @@ export default {
             `**${i + 1}.** ${e.username} • ${e.reason} • ${e.addedByName}`
           ).join('\n');
 
-          const embed = new EmbedBuilder()
+          const embed = new EmbedBuilder().setColor(0x2B2D31)
             .setColor(0xFF0000)
             .setTitle('🚫 Чёрный список')
             .setDescription(description)

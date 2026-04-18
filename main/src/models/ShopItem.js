@@ -17,4 +17,4 @@ const shopItemSchema = new mongoose.Schema({
 
 shopItemSchema.index({ guildId: 1, isActive: 1 });
 
-export default mongoose.model('MainShopItem', shopItemSchema);
+export default mongoose.models.MainShopItem || mongoose.model('MainShopItem', shopItemSchema);

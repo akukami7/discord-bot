@@ -68,7 +68,7 @@ export default {
             const openTicketsCount = await Ticket.countDocuments({ guildId: interaction.guild.id, status: 'open' });
             const closedTicketsCount = await Ticket.countDocuments({ guildId: interaction.guild.id, status: 'closed' });
 
-            const embed = new EmbedBuilder()
+            const embed = new EmbedBuilder().setColor(0x2B2D31)
                 .setTitle('Статистика тикетов')
                 .addFields(
                     { name: 'Ожидают', value: `${pendingTicketsCount}`, inline: true },
@@ -83,7 +83,7 @@ export default {
         } else if (interaction.options.getSubcommand() === 'setup') {
             await interaction.deferReply({ ephemeral: true });
 
-            const embed = new EmbedBuilder()
+            const embed = new EmbedBuilder().setColor(0x2B2D31)
                 .setTitle('Служба поддержки')
                 .setDescription('Нажмите на кнопку ниже, чтобы создать приватный тикет и связаться с администрацией.')
                 .setColor(client.config.embedColor);

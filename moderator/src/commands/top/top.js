@@ -46,7 +46,7 @@ export default {
           return `**${i + 1}.** ${username} • ${formatNumber(s.messagesCount)} сообщений`;
         }).join('\n');
 
-        const embed = new EmbedBuilder()
+        const embed = new EmbedBuilder().setColor(0x2B2D31)
           .setColor(client.config.embedColor)
           .setTitle('💬 Топ по сообщениям')
           .setDescription(description)
@@ -69,7 +69,7 @@ export default {
           return `**${i + 1}.** ${username} • ${formatNumber(p.points)} баллов`;
         }).join('\n');
 
-        const embed = new EmbedBuilder()
+        const embed = new EmbedBuilder().setColor(0x2B2D31)
           .setColor(client.config.embedAccent)
           .setTitle('⭐ Топ по баллам')
           .setDescription(description)
@@ -93,7 +93,7 @@ export default {
           return `**${i + 1}.** ${username} • ${formatNumber(s.recruitmentsCount)} наборов`;
         }).join('\n');
 
-        const embed = new EmbedBuilder()
+        const embed = new EmbedBuilder().setColor(0x2B2D31)
           .setColor(client.config.embedColor)
           .setTitle('📋 Топ по наборам')
           .setDescription(description)
@@ -117,7 +117,7 @@ export default {
           return `**${i + 1}.** ${username} • ${formatNumber(s.verificationsCount)} верификаций`;
         }).join('\n');
 
-        const embed = new EmbedBuilder()
+        const embed = new EmbedBuilder().setColor(0x2B2D31)
           .setColor(client.config.embedColor)
           .setTitle('✅ Топ по верификациям')
           .setDescription(description)
@@ -141,7 +141,7 @@ export default {
           return `**${i + 1}.** ${username} • ${formatTime(s.voiceOnline)}`;
         }).join('\n');
 
-        const embed = new EmbedBuilder()
+        const embed = new EmbedBuilder().setColor(0x2B2D31)
           .setColor(client.config.embedColor)
           .setTitle('🎙️ Топ по голосу')
           .setDescription(description)

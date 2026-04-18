@@ -16,12 +16,12 @@ export default {
         const balance = user?.balance || 0;
         const stars = user?.stars || 0;
 
-        const embed = new EmbedBuilder()
+        const embed = new EmbedBuilder().setColor(0x2B2D31)
             .setTitle(`Текущий баланс — ${target.displayName}`)
             .setThumbnail(target.displayAvatarURL({ size: 256 }))
             .addFields(
-                { name: 'Монеты:', value: `${formatNumber(balance)}`, inline: true },
-                { name: 'Звезды:', value: `${formatNumber(stars)}`, inline: true },
+                { name: '\u200b', value: `> Монеты:\n\`\`\`\n${formatNumber(balance)}\n\`\`\``, inline: true },
+                { name: '\u200b', value: `> Звезды:\n\`\`\`\n${formatNumber(stars)}\n\`\`\``, inline: true }
             );
 
         await interaction.editReply({ embeds: [embed] });

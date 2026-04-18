@@ -26,4 +26,4 @@ const recruitmentSchema = new mongoose.Schema({
 recruitmentSchema.index({ guildId: 1, status: 1, createdAt: -1 });
 recruitmentSchema.index({ guildId: 1, responderId: 1 });
 
-export default mongoose.model('Recruitment', recruitmentSchema);
+export default mongoose.models.Recruitment || mongoose.model('Recruitment', recruitmentSchema);

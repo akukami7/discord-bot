@@ -30,7 +30,7 @@ export default {
         return `${numberEmojis[i]} <@${u.userId}> — **${formatNumber(u.balance)}**`;
       });
 
-      const embed = new EmbedBuilder()
+      const embed = new EmbedBuilder().setColor(0x2B2D31)
         .setTitle('Топ 10 пользователей по балансу')
         .setDescription(lines.length ? lines.join('\n') : 'Нет данных.');
 
@@ -57,7 +57,7 @@ export default {
         return `${medal} <@${u.userId}> — **${u.level}** уровень (${formatNumber(u.totalXp)} XP)`;
       });
 
-      const embed = new EmbedBuilder()
+      const embed = new EmbedBuilder().setColor(0x2B2D31)
         .setTitle('📊 Топ по уровню')
         .setDescription(lines.length ? lines.join('\n') : 'Нет данных.')
         .setColor(client.config.embedAccent);
@@ -75,7 +75,7 @@ export default {
         return `${medal} <@${m.user1Id}> ❤️ <@${m.user2Id}> — **${formatTime(m.pairOnline)}**`;
       });
 
-      const embed = new EmbedBuilder()
+      const embed = new EmbedBuilder().setColor(0x2B2D31)
         .setTitle('❤️ Топ пар по онлайну')
         .setDescription(lines.length ? lines.join('\n') : 'Нет данных.')
         .setColor(0xEB459E);
@@ -93,7 +93,7 @@ export default {
         return `${medal} <@${u.userId}> — **${formatTime(u.voiceOnline)}**`;
       });
 
-      const embed = new EmbedBuilder()
+      const embed = new EmbedBuilder().setColor(0x2B2D31)
         .setTitle('🎙️ Топ по голосовому онлайну')
         .setDescription(lines.length ? lines.join('\n') : 'Нет данных.')
         .setColor(client.config.embedAccent);
@@ -111,7 +111,7 @@ export default {
         return `${medal} **${r.name}** (<@${r.userId}>) — **${formatTime(r.voiceOnline)}**`;
       });
 
-      const embed = new EmbedBuilder()
+      const embed = new EmbedBuilder().setColor(0x2B2D31)
         .setTitle('🏠 Топ личных комнат')
         .setDescription(lines.length ? lines.join('\n') : 'Нет данных.')
         .setColor(client.config.embedAccent);

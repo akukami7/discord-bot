@@ -19,12 +19,12 @@ export default {
             const isBlacklisted = await TicketBlacklist.findOne({ guildId, userId: user.id });
             if (isBlacklisted) return;
 
-            let pendingTicket = await Ticket.findOne({ guildId, creatorId: user.id, status: 'pending' });
+            const pendingTicket = await Ticket.findOne({ guildId, creatorId: user.id, status: 'pending' });
             if (pendingTicket) {
                 return message.reply('Ваше обращение еще на рассмотрении у администрации. Пожалуйста, дождитесь принятия запроса.');
             }
 
-            let ticket = await Ticket.findOne({ guildId, creatorId: user.id, status: 'open' });
+            const ticket = await Ticket.findOne({ guildId, creatorId: user.id, status: 'open' });
 
             if (!ticket) {
                 // Ignore DMs if no ticket exists, or tell them to use the command
@@ -33,7 +33,7 @@ export default {
 
             const channel = guild.channels.cache.get(ticket.channelId);
             if (channel) {
-                const relayEmbed = new EmbedBuilder()
+                const relayEmbed = new EmbedBuilder().setColor(0x2B2D31)
                     .setAuthor({ name: user.tag, iconURL: user.displayAvatarURL() })
                     .setDescription(message.content || '*Без текста*')
                     .setColor('#2b2d31')
@@ -51,13 +51,13 @@ export default {
 
         // --- Handling guild messages (Admin to User) ---
         if (message.guild) {
-            let ticket = await Ticket.findOne({ channelId: message.channel.id, status: 'open' });
+            const ticket = await Ticket.findOne({ channelId: message.channel.id, status: 'open' });
             if (!ticket) return;
 
             const user = await client.users.fetch(ticket.creatorId).catch(() => null);
             if (!user) return message.reply('Пользователь не найден (возможно покинул сервер или заблокировал бота).');
 
-            const relayEmbed = new EmbedBuilder()
+            const relayEmbed = new EmbedBuilder().setColor(0x2B2D31)
                 .setAuthor({ name: 'Служба поддержки Angelss', iconURL: message.guild.iconURL() })
                 .setDescription(message.content || '*Без текста*')
                 .setColor(client.config.embedColor)

@@ -16,7 +16,7 @@ export default {
       `**\`/${cmd.name}\`** — ${cmd.description}`
     ).join('\n');
 
-    const embed = new EmbedBuilder()
+    const embed = new EmbedBuilder().setColor(0x2B2D31)
       .setTitle('📋 Список команд')
       .setDescription(commandList || 'Нет доступных команд.')
       .setColor(client.config.embedColor)

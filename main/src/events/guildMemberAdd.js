@@ -13,7 +13,7 @@ export default {
       const channel = member.guild.channels.cache.get(config.joinLogChannel);
       if (!channel) return;
 
-      const embed = new EmbedBuilder()
+      const embed = new EmbedBuilder().setColor(0x2B2D31)
         .setColor(client.config.embedColor)
         .setTitle('👋 Новый участник!')
         .setThumbnail(member.user.displayAvatarURL({ size: 1024, dynamic: true }))

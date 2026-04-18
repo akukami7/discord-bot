@@ -5,7 +5,7 @@ import chalk from 'chalk';
 
 export const loadEvents = async (client) => {
   const eventsPath = path.join(process.cwd(), 'src', 'events');
-  
+
   if (!fs.existsSync(eventsPath)) {
     fs.mkdirSync(eventsPath, { recursive: true });
     return;

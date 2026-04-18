@@ -27,7 +27,7 @@ export default {
       const minutes = Math.floor((remaining % 3600000) / 60000);
       const seconds = Math.floor((remaining % 60000) / 1000);
 
-      const cooldownEmbed = new EmbedBuilder()
+      const cooldownEmbed = new EmbedBuilder().setColor(0x2B2D31)
         .setTitle('Временная награда')
         .setThumbnail(interaction.user.displayAvatarURL({ size: 256 }))
         .setDescription(`<@${interaction.user.id}>, Вы **уже** забрали **временную** награду!\nВы можете **получить** следующую через **${hours} ч. ${minutes} мин. ${seconds} сек.**`);
@@ -50,7 +50,7 @@ export default {
       description: `Временная награда: +${amount}`,
     });
 
-    const embed = new EmbedBuilder()
+    const embed = new EmbedBuilder().setColor(0x2B2D31)
       .setTitle(`Временная награда — ${interaction.user.displayName}`)
       .setThumbnail(interaction.user.displayAvatarURL({ size: 256 }))
       .setDescription(`Вы забрали:\n\`${formatNumber(amount)}\` монет\n\nВозвращайтесь через **24 часа**`);

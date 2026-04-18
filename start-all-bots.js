@@ -74,6 +74,18 @@ const bots = [
       BLACKLIST_LOG_CHANNEL_ID: process.env.MOD_BLACKLIST_LOG_CHANNEL_ID,
     },
   },
+  {
+    name: 'CasesBot',
+    cwd: path.join(__dirname, 'Cases'),
+    envMap: {
+      TOKEN: process.env.CASES_TOKEN,
+      CLIENT_ID: process.env.CASES_CLIENT_ID,
+      GUILD_ID: process.env.CASES_GUILD_ID,
+      MONGO_URI: process.env.CASES_MONGO_URI,
+      EMBED_COLOR: process.env.CASES_EMBED_COLOR,
+      EMBED_ACCENT: process.env.CASES_EMBED_ACCENT,
+    },
+  },
 ];
 
 const processes = [];

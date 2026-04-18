@@ -21,7 +21,7 @@ export default {
     const members = role.members;
     const memberList = members.map((m, i) => `${i + 1}. ${m.user.username}`).join('\n');
 
-    const embed = new EmbedBuilder()
+    const embed = new EmbedBuilder().setColor(0x2B2D31)
       .setColor(role.color || client.config.embedColor)
       .setTitle(`👥 Пользователи в роли: ${role.name}`)
       .setDescription(memberList.length > 4096 ? memberList.slice(0, 4093) + '...' : memberList)

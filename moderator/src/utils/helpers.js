@@ -11,7 +11,7 @@ export {
   isValidSnowflake,
   sanitizeDiscordName,
   CooldownManager,
-} from '../../shared/utils/helpers.js';
+} from '../../../shared/utils/helpers.js';
 
 /**
  * Create embed footer text (moderator-specific)

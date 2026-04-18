@@ -12,4 +12,4 @@ const guildConfigSchema = new mongoose.Schema({
   antiCrashEnabled: { type: Boolean, default: true },
 });
 
-export default mongoose.model('GuildConfig', guildConfigSchema);
+export default mongoose.models.GuildConfig || mongoose.model('GuildConfig', guildConfigSchema);

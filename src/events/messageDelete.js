@@ -22,7 +22,7 @@ export default {
         // If a message was deleted in DMs
         if (!message.guild) {
             // User deleted their message in DM
-            let creatorId = message.author ? message.author.id : null;
+            const creatorId = message.author ? message.author.id : null;
             if (!creatorId) return; // We need creatorId to find ticket
 
             const ticket = await Ticket.findOne({ creatorId: creatorId, status: 'open' });
@@ -39,10 +39,10 @@ export default {
             // Search recent messages in the ticket channel for the relayed embed
             try {
                 const messages = await channel.messages.fetch({ limit: 50 });
-                const relayedMsg = messages.find(m => 
-                    m.author.id === client.user.id && 
-                    m.embeds.length > 0 && 
-                    m.embeds[0].footer && 
+                const relayedMsg = messages.find(m =>
+                    m.author.id === client.user.id &&
+                    m.embeds.length > 0 &&
+                    m.embeds[0].footer &&
                     m.embeds[0].footer.text &&
                     m.embeds[0].footer.text.includes(message.id)
                 );
@@ -67,10 +67,10 @@ export default {
             try {
                 const dmChannel = await user.createDM();
                 const messages = await dmChannel.messages.fetch({ limit: 50 });
-                const relayedMsg = messages.find(m => 
-                    m.author.id === client.user.id && 
-                    m.embeds.length > 0 && 
-                    m.embeds[0].footer && 
+                const relayedMsg = messages.find(m =>
+                    m.author.id === client.user.id &&
+                    m.embeds.length > 0 &&
+                    m.embeds[0].footer &&
                     m.embeds[0].footer.text &&
                     m.embeds[0].footer.text.includes(message.id)
                 );

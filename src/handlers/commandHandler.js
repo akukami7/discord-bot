@@ -5,7 +5,7 @@ import chalk from 'chalk';
 
 export const loadCommands = async (client) => {
   const commandsPath = path.join(process.cwd(), 'src', 'commands');
-  
+
   if (!fs.existsSync(commandsPath)) {
     fs.mkdirSync(commandsPath, { recursive: true });
     return;

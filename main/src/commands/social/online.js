@@ -26,7 +26,7 @@ export default {
       currentSession = Math.floor((Date.now() - user.voiceJoinedAt.getTime()) / 1000);
     }
 
-    const embed = new EmbedBuilder()
+    const embed = new EmbedBuilder().setColor(0x2B2D31)
       .setTitle(`Голосовой онлайн — ${target.displayName}`)
       .setThumbnail(target.displayAvatarURL({ size: 256 }))
       .addFields(

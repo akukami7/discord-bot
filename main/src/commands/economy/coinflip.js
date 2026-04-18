@@ -36,7 +36,7 @@ export default {
       return interaction.editReply('❌ Недостаточно монет!');
     }
 
-    const embed = new EmbedBuilder()
+    const embed = new EmbedBuilder().setColor(0x2B2D31)
       .setTitle(`Монетка — ${interaction.user.displayName}`)
       .setDescription(`<@${userId}>, выберите сторону на которую хотите поставить ваши\n**${formatNumber(amount)}** 🦋`)
       .setColor(0x2B2D31);
@@ -59,11 +59,11 @@ export default {
       const key = `coinflip_expire_${msg.id}`;
       if (!coinflipCooldown.isOnCooldown(key, DOUBLE_CLICK_KEY_MS)) {
         coinflipCooldown.cooldowns.set(key, Date.now());
-        const expEmbed = new EmbedBuilder()
+        const expEmbed = new EmbedBuilder().setColor(0x2B2D31)
           .setTitle(`Монетка — ${interaction.user.displayName}`)
           .setDescription(`<@${userId}>, время на ответ **вышло**`)
           .setColor(0x2B2D31);
-        await interaction.editReply({ embeds: [expEmbed], components: [] }).catch(() => {});
+        await interaction.editReply({ embeds: [expEmbed], components: [] }).catch(() => { });
       }
     }, 30000);
   },
@@ -89,14 +89,10 @@ export default {
 
     await interaction.deferUpdate();
 
-    // Re-check balance and deduct atomically to prevent race conditions
-    const user = await User.findOneAndUpdate(
-      { guildId, userId, balance: { $gte: amount } },
-      { $inc: { balance: -amount } }
-    );
-
-    if (!user) {
-      const errEmbed = new EmbedBuilder()
+    // Re-check balance
+    const user = await User.findOne({ guildId, userId });
+    if (!user || user.balance < amount) {
+      const errEmbed = new EmbedBuilder().setColor(0x2B2D31)
         .setTitle(`Монетка — ${interaction.user.displayName}`)
         .setDescription(`<@${userId}>, недостаточно монет!`)
         .setColor(0xED4245);
@@ -106,7 +102,7 @@ export default {
     const sideText = side === 'heads' ? 'Орёл' : 'Решка';
 
     // Step 1: Show spinning animation
-    const spinEmbed = new EmbedBuilder()
+    const spinEmbed = new EmbedBuilder().setColor(0x2B2D31)
       .setTitle(`Монетка — ${interaction.user.displayName}`)
       .setDescription(`Ставка: **${formatNumber(amount)}** 🦋\nВыбранная сторона: **${sideText}**\n\n🪙 Монетка крутится...`)
       .setThumbnail(COINFLIP_GIF)
@@ -123,7 +119,7 @@ export default {
     const resultText = result === 'heads' ? 'Орёл' : 'Решка';
 
     if (won) {
-      await User.findOneAndUpdate({ guildId, userId }, { $inc: { balance: amount * 2 } });
+      await User.findOneAndUpdate({ guildId, userId }, { $inc: { balance: amount } });
       await Transaction.create({
         guildId,
         fromId: userId,
@@ -132,7 +128,7 @@ export default {
         description: `Выигрыш в монетку: +${amount}`,
       });
     } else {
-      // Stake already deducted atomically
+      await User.findOneAndUpdate({ guildId, userId }, { $inc: { balance: -amount } });
       await Transaction.create({
         guildId,
         fromId: userId,
@@ -142,7 +138,7 @@ export default {
       });
     }
 
-    const resultEmbed = new EmbedBuilder()
+    const resultEmbed = new EmbedBuilder().setColor(0x2B2D31)
       .setTitle(`Монетка — ${interaction.user.displayName}`)
       .setDescription(
         `Ставка: **${formatNumber(amount)}** 🦋\n` +

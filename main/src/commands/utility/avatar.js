@@ -12,7 +12,7 @@ export default {
     const avatar = member?.displayAvatarURL({ size: 1024, dynamic: true })
       || user.displayAvatarURL({ size: 1024, dynamic: true });
 
-    const embed = new EmbedBuilder()
+    const embed = new EmbedBuilder().setColor(0x2B2D31)
       .setTitle(`Аватар — ${user.displayName}`)
       .setImage(avatar)
       .setColor(client.config.embedColor);

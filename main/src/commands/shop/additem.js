@@ -58,7 +58,7 @@ export default {
         creatorId: creator ? creator.id : null,
     });
 
-    const embed = new EmbedBuilder()
+    const embed = new EmbedBuilder().setColor(0x2B2D31)
         .setTitle('✅ Товар добавлен!')
         .setDescription(`**Название:** ${name}\n**Тип:** ${type === 'role' ? 'Личные роли' : 'Общее'}\n**Цена:** ${price} ${currency === 'standart' ? '👑' : '🦋'}`)
         .setColor(0x00FF00);

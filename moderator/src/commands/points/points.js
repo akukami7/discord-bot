@@ -71,7 +71,7 @@ export default {
           return interaction.editReply({ content: `ℹ️ У пользователя ${user} нет баллов.` });
         }
 
-        const embed = new EmbedBuilder()
+        const embed = new EmbedBuilder().setColor(0x2B2D31)
           .setColor(client.config.embedAccent)
           .setTitle(`⭐ Баллы: ${user.username}`)
           .addFields(
@@ -113,7 +113,7 @@ export default {
         });
         await points.save();
 
-        const embed = new EmbedBuilder()
+        const embed = new EmbedBuilder().setColor(0x2B2D31)
           .setColor(0x00FF00)
           .setTitle('✅ Конвертация выполнена')
           .setDescription(`Вы конвертировали **${formatNumber(amount)}** баллов в **${formatNumber(coins)}** монет.`)
@@ -136,7 +136,7 @@ export default {
           `**${i + 1}.** ${item.name} • **${formatNumber(item.price)}** баллов\n${item.description}`
         ).join('\n');
 
-        const embed = new EmbedBuilder()
+        const embed = new EmbedBuilder().setColor(0x2B2D31)
           .setColor(client.config.embedAccent)
           .setTitle('🛒 Магазин за баллы')
           .setDescription(description)
@@ -166,7 +166,7 @@ export default {
         });
         await points.save();
 
-        const embed = new EmbedBuilder()
+        const embed = new EmbedBuilder().setColor(0x2B2D31)
           .setColor(0x00FF00)
           .setTitle('✅ Баллы добавлены')
           .setDescription(`Добавлено **${formatNumber(amount)}** баллов для ${user}.`)
@@ -185,7 +185,7 @@ export default {
         const amount = interaction.options.getInteger('amount');
         const reason = interaction.options.getString('reason') || 'Администратор убрал';
 
-        let points = await Points.findOne({ guildId, userId: user.id });
+        const points = await Points.findOne({ guildId, userId: user.id });
         if (!points || points.points < amount) {
           return interaction.editReply({ content: `❌ У пользователя недостаточно баллов. Доступно: ${points ? formatNumber(points.points) : '0'}` });
         }
@@ -200,7 +200,7 @@ export default {
         });
         await points.save();
 
-        const embed = new EmbedBuilder()
+        const embed = new EmbedBuilder().setColor(0x2B2D31)
           .setColor(0xFF0000)
           .setTitle('❌ Баллы убраны')
           .setDescription(`Убрано **${formatNumber(amount)}** баллов у ${user}.`)

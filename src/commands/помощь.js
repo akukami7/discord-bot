@@ -6,7 +6,7 @@ export default {
     data: new SlashCommandBuilder()
         .setName('помощь')
         .setDescription('Задать вопрос по серверу')
-        .addStringOption(option => 
+        .addStringOption(option =>
             option.setName('вопрос')
                 .setDescription('Ваш вопрос')
                 .setRequired(true)
@@ -23,13 +23,13 @@ export default {
 
         const existingTicket = await Ticket.findOne({ guildId: guild.id, creatorId: user.id, status: { $in: ['open', 'pending'] } });
         if (existingTicket) {
-            return interaction.editReply({ content: `У вас уже есть активный диалог или ваш запрос находится на рассмотрении.` });
+            return interaction.editReply({ content: 'У вас уже есть активный диалог или ваш запрос находится на рассмотрении.' });
         }
 
         const ticketId = `ticket-${Math.floor(Math.random() * 90000) + 10000}`;
         const categoryId = process.env.TICKETS_CATEGORY_ID;
 
-        const userEmbed1 = new EmbedBuilder()
+        const userEmbed1 = new EmbedBuilder().setColor(0x2B2D31)
             .setAuthor({ name: 'Служба поддержки Angelss', iconURL: guild.iconURL() || undefined })
             .setDescription('**Ваше обращение успешно отправлено**\nОжидайте...')
             .setColor(client.config.embedColor);
@@ -66,7 +66,7 @@ export default {
             const ticket = new Ticket({ ticketId, guildId: guild.id, channelId: channel.id, creatorId: user.id, status: 'pending' });
             await ticket.save();
 
-            const staffEmbed = new EmbedBuilder()
+            const staffEmbed = new EmbedBuilder().setColor(0x2B2D31)
                 .setTitle('Новое обращение (Ожидает принятия)')
                 .setDescription(`Пользователь ${user} (${user.id}) открыл обращение.\nНажмите "Принять", чтобы начать переписку.`)
                 .addFields({ name: 'Вопрос', value: question })
@@ -80,7 +80,7 @@ export default {
 
             await channel.send({ content: `@here Новое обращение от ${user.tag}`, embeds: [staffEmbed], components: [staffRow] });
 
-            const replyEmbed = new EmbedBuilder()
+            const replyEmbed = new EmbedBuilder().setColor(0x2B2D31)
                 .setTitle('Задать вопрос по серверу')
                 .setDescription(`${user}, Вы **успешно** задали вопрос, **ожидайте** ответа`)
                 .setThumbnail(user.displayAvatarURL())

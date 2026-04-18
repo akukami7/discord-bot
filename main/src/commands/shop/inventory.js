@@ -9,7 +9,7 @@ export default {
         .setName('inventory')
         .setDescription('Посмотреть инвентарь'),
     async execute(interaction, client) {
-        const embed = new EmbedBuilder()
+        const embed = new EmbedBuilder().setColor(0x2B2D31)
             .setDescription('Какой из инвентарей Вы хотите посмотреть?')
             .setThumbnail(interaction.user.displayAvatarURL({ size: 256 }));
 
@@ -41,7 +41,7 @@ export default {
                     return `\`${i + 1}.\` ${status} **${r.name}** — ${r.color}`;
                 });
 
-                const embed = new EmbedBuilder()
+                const embed = new EmbedBuilder().setColor(0x2B2D31)
                     .setTitle('🎭 Личные роли')
                     .setDescription(lines.length ? lines.join('\n') : 'У вас нет личных ролей.')
                     .setThumbnail(interaction.user.displayAvatarURL({ size: 256 }));
@@ -63,7 +63,7 @@ export default {
                     return `\`${i + 1}.\` ${status} ${lock} **${r.name}** — ${formatTime(r.voiceOnline)}`;
                 });
 
-                const embed = new EmbedBuilder()
+                const embed = new EmbedBuilder().setColor(0x2B2D31)
                     .setTitle('🏠 Личные комнаты')
                     .setDescription(lines.length ? lines.join('\n') : 'У вас нет личных комнат.')
                     .setThumbnail(interaction.user.displayAvatarURL({ size: 256 }));
@@ -85,7 +85,7 @@ export default {
                     return `\`${i + 1}.\` **${item.name}** — Использований: ${uses}`;
                 });
 
-                const embed = new EmbedBuilder()
+                const embed = new EmbedBuilder().setColor(0x2B2D31)
                     .setTitle('🎒 Предметы')
                     .setDescription(lines.length ? lines.join('\n') : 'У вас нет предметов.')
                     .setThumbnail(interaction.user.displayAvatarURL({ size: 256 }));
@@ -102,7 +102,7 @@ export default {
         if (parts[1] === 'back') {
             await interaction.deferUpdate();
 
-            const embed = new EmbedBuilder()
+            const embed = new EmbedBuilder().setColor(0x2B2D31)
                 .setDescription('Какой из инвентарей Вы хотите посмотреть?')
                 .setThumbnail(interaction.user.displayAvatarURL({ size: 256 }));
 

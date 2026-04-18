@@ -40,9 +40,9 @@ export default {
           return interaction.editReply({ content: 'ℹ️ У вас нет баллов.' });
         }
 
-        const embed = new EmbedBuilder()
+        const embed = new EmbedBuilder().setColor(0x2B2D31)
           .setColor(client.config.embedAccent)
-          .setTitle(`⭐ Ваши баллы`)
+          .setTitle('⭐ Ваши баллы')
           .addFields(
             { name: 'Доступно', value: `**${formatNumber(points.points)}**`, inline: true },
             { name: 'Всего заработано', value: `**${formatNumber(points.earnedPoints)}**`, inline: true },
@@ -81,7 +81,7 @@ export default {
         });
         await points.save();
 
-        const embed = new EmbedBuilder()
+        const embed = new EmbedBuilder().setColor(0x2B2D31)
           .setColor(0x00FF00)
           .setTitle('✅ Конвертация выполнена')
           .setDescription(`Вы конвертировали **${formatNumber(amount)}** баллов в **${formatNumber(coins)}** монет.`)
@@ -103,7 +103,7 @@ export default {
           `**${i + 1}.** ${item.name} • **${formatNumber(item.price)}** баллов\n${item.description}`
         ).join('\n');
 
-        const embed = new EmbedBuilder()
+        const embed = new EmbedBuilder().setColor(0x2B2D31)
           .setColor(client.config.embedAccent)
           .setTitle('🛒 Магазин за баллы')
           .setDescription(description)

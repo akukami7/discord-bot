@@ -14,4 +14,4 @@ const personalRoomSchema = new mongoose.Schema({
 personalRoomSchema.index({ guildId: 1, userId: 1 }, { unique: true });
 personalRoomSchema.index({ guildId: 1, voiceOnline: -1 });
 
-export default mongoose.model('MainPersonalRoom', personalRoomSchema);
+export default mongoose.models.MainPersonalRoom || mongoose.model('MainPersonalRoom', personalRoomSchema);

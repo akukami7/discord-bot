@@ -17,4 +17,4 @@ const nicknameHistorySchema = new mongoose.Schema({
 nicknameHistorySchema.index({ guildId: 1, userId: 1, changedAt: -1 });
 nicknameHistorySchema.index({ guildId: 1, changedAt: -1 });
 
-export default mongoose.model('NicknameHistory', nicknameHistorySchema);
+export default mongoose.models.NicknameHistory || mongoose.model('NicknameHistory', nicknameHistorySchema);

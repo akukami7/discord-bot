@@ -26,7 +26,7 @@ export default {
       const partnerId = userMarriage.user1Id === interaction.user.id ? userMarriage.user2Id : userMarriage.user1Id;
       if (partnerId === target.id) {
         await Marriage.findByIdAndDelete(userMarriage._id);
-        const embed = new EmbedBuilder()
+        const embed = new EmbedBuilder().setColor(0x2B2D31)
           .setDescription(`💔 ${interaction.user} и ${target} расторгли брак.`)
           .setColor(0xED4245);
         return interaction.editReply({ embeds: [embed] });
@@ -42,7 +42,7 @@ export default {
     if (targetMarriage) return interaction.editReply(`❌ ${target.displayName} уже в браке!`);
 
     // Propose
-    const embed = new EmbedBuilder()
+    const embed = new EmbedBuilder().setColor(0x2B2D31)
       .setTitle('💍 Предложение')
       .setDescription(`${interaction.user} предлагает ${target} заключить брак!\n\n${target}, примите или отклоните предложение.`)
       .setColor(0xEB459E);
@@ -82,7 +82,7 @@ export default {
     await interaction.deferUpdate();
 
     if (action === 'decline') {
-      const embed = new EmbedBuilder()
+      const embed = new EmbedBuilder().setColor(0x2B2D31)
         .setDescription(`💔 <@${targetId}> отклонил предложение.`)
         .setColor(0xED4245);
       return interaction.editReply({ embeds: [embed], components: [] });
@@ -95,14 +95,14 @@ export default {
       // Handle duplicate key error (race condition)
       if (err.code === 11000) {
         return interaction.editReply({
-          embeds: [new EmbedBuilder().setDescription('❌ Один из пользователей уже в браке.').setColor(0xED4245)],
+          embeds: [new EmbedBuilder().setColor(0x2B2D31).setDescription('❌ Один из пользователей уже в браке.').setColor(0xED4245)],
           components: []
         });
       }
       throw err;
     }
 
-    const embed = new EmbedBuilder()
+    const embed = new EmbedBuilder().setColor(0x2B2D31)
       .setTitle('💍 Свадьба!')
       .setDescription(`🎉 <@${proposerId}> и <@${targetId}> теперь в браке! Поздравляем! 🥂`)
       .setColor(0xEB459E);

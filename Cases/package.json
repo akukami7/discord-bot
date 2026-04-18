@@ -1,0 +1,17 @@
+{
+  "name": "angelss-cases",
+  "version": "1.0.0",
+  "description": "Cases bot for Angelss",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js"
+  },
+  "dependencies": {
+    "chalk": "^5.6.2",
+    "discord.js": "^14.26.3",
+    "dotenv": "^17.4.2",
+    "mongoose": "^9.4.1"
+  }
+}

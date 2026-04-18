@@ -29,7 +29,7 @@ export default {
             ? `💍 В браке с <@${marriage.user1Id === target.id ? marriage.user2Id : marriage.user1Id}>`
             : '💔 Не в браке';
 
-        const embed = new EmbedBuilder()
+        const embed = new EmbedBuilder().setColor(0x2B2D31)
             .setAuthor({ name: target.displayName, iconURL: target.displayAvatarURL() })
             .setThumbnail(target.displayAvatarURL({ size: 256 }))
             .setColor(user.profileColor || client.config.embedAccent)

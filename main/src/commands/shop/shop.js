@@ -133,7 +133,7 @@ async function showShopPage(interaction, client, page, category = 'all', isEdit 
 
   fullDescription += `\n\nСтраница ${page + 1}/${totalPages} • Всего товаров: ${total}`;
 
-  const embed = new EmbedBuilder()
+  const embed = new EmbedBuilder().setColor(0x2B2D31)
     .setTitle(embedTitle)
     .setDescription(fullDescription)
     .setColor(0x2B2D31);

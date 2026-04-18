@@ -11,4 +11,4 @@ const blacklistSchema = new mongoose.Schema({
 // Ensure a user is only blacklisted once per guild
 blacklistSchema.index({ guildId: 1, userId: 1 }, { unique: true });
 
-export default mongoose.model('TicketBlacklist', blacklistSchema);
+export default mongoose.models.TicketBlacklist || mongoose.model('TicketBlacklist', blacklistSchema);

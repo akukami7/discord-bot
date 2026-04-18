@@ -24,10 +24,10 @@ export default {
       if (process.env.GUILD_ID) {
         await client.application.commands.set([], process.env.GUILD_ID);
         await client.application.commands.set(commandsToRegister, process.env.GUILD_ID);
-        console.log(chalk.green(`✓ Successfully reloaded guild (/) commands.`));
+        console.log(chalk.green('✓ Successfully reloaded guild (/) commands.'));
       } else {
         await client.application.commands.set(commandsToRegister);
-        console.log(chalk.green(`✓ Successfully reloaded global (/) commands.`));
+        console.log(chalk.green('✓ Successfully reloaded global (/) commands.'));
       }
     } catch (error) {
       console.error(chalk.red('Error registering commands:'), error);

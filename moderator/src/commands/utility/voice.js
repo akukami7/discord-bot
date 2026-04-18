@@ -28,7 +28,7 @@ export default {
       const hours = Math.floor(staff.voiceOnline / 3600);
       const minutes = Math.floor((staff.voiceOnline % 3600) / 60);
 
-      const embed = new EmbedBuilder()
+      const embed = new EmbedBuilder().setColor(0x2B2D31)
         .setColor(client.config.embedColor)
         .setTitle(`🎙️ Голосовая активность: ${user.username}`)
         .addFields(
@@ -58,7 +58,7 @@ export default {
       return `**${i + 1}.** ${username} • ${hours}ч ${minutes}м`;
     }).join('\n');
 
-    const embed = new EmbedBuilder()
+    const embed = new EmbedBuilder().setColor(0x2B2D31)
       .setColor(client.config.embedColor)
       .setTitle('🎙️ Топ голосовой активности')
       .setDescription(description)

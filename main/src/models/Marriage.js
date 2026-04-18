@@ -13,4 +13,4 @@ marriageSchema.index({ guildId: 1, user1Id: 1 }, { unique: true });
 marriageSchema.index({ guildId: 1, user2Id: 1 }, { unique: true });
 marriageSchema.index({ guildId: 1, pairOnline: -1 });
 
-export default mongoose.model('MainMarriage', marriageSchema);
+export default mongoose.models.MainMarriage || mongoose.model('MainMarriage', marriageSchema);

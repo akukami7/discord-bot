@@ -38,6 +38,8 @@ export default {
     ),
 
   async execute(interaction, client) {
+    await interaction.deferReply({ ephemeral: true });
+
     const subcommand = interaction.options.getSubcommand();
     const guildId = interaction.guild.id;
 
@@ -51,11 +53,11 @@ export default {
       config.joinLogChannel = channel.id;
       await config.save();
 
-      const embed = new EmbedBuilder()
+      const embed = new EmbedBuilder().setColor(0x2B2D31)
         .setColor(client.config.embedColor)
         .setDescription(`✅ Канал логов **зашедших участников** успешно установлен на <#${channel.id}>.`);
 
-      return interaction.reply({ embeds: [embed] });
+      return interaction.editReply({ embeds: [embed] });
     }
 
     if (subcommand === 'anticrash') {
@@ -63,11 +65,11 @@ export default {
       config.antiCrashLogChannel = channel.id;
       await config.save();
 
-      const embed = new EmbedBuilder()
+      const embed = new EmbedBuilder().setColor(0x2B2D31)
         .setColor(client.config.embedColor)
         .setDescription(`✅ Канал логов **Антикраша** успешно установлен на <#${channel.id}>.`);
 
-      return interaction.reply({ embeds: [embed] });
+      return interaction.editReply({ embeds: [embed] });
     }
 
     if (subcommand === 'toggle_anticrash') {
@@ -75,11 +77,11 @@ export default {
       config.antiCrashEnabled = isEnabled;
       await config.save();
 
-      const embed = new EmbedBuilder()
+      const embed = new EmbedBuilder().setColor(0x2B2D31)
         .setColor(client.config.embedColor)
         .setDescription(`✅ Система **Антикраш** была ${isEnabled ? 'включена' : 'выключена'}.`);
 
-      return interaction.reply({ embeds: [embed] });
+      return interaction.editReply({ embeds: [embed] });
     }
   },
 };

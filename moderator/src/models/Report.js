@@ -30,4 +30,4 @@ reportSchema.index({ guildId: 1, status: 1, createdAt: -1 });
 reportSchema.index({ guildId: 1, reportedId: 1 });
 reportSchema.index({ guildId: 1, reporterId: 1 });
 
-export default mongoose.model('Report', reportSchema);
+export default mongoose.models.Report || mongoose.model('Report', reportSchema);

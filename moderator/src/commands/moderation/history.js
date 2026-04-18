@@ -27,7 +27,7 @@ export default {
       return interaction.editReply({ content: `ℹ️ У пользователя ${user} нет нарушений.` });
     }
 
-    const embed = new EmbedBuilder()
+    const embed = new EmbedBuilder().setColor(0x2B2D31)
       .setColor(client.config.embedColor)
       .setTitle(`📜 История нарушений: ${user.username}`)
       .setThumbnail(user.displayAvatarURL())

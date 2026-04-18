@@ -15,4 +15,4 @@ const voiceStateUpdateSchema = new mongoose.Schema({
 voiceStateUpdateSchema.index({ guildId: 1, userId: 1, joinedAt: -1 });
 voiceStateUpdateSchema.index({ guildId: 1, duration: -1 });
 
-export default mongoose.model('VoiceStateUpdate', voiceStateUpdateSchema);
+export default mongoose.models.VoiceStateUpdate || mongoose.model('VoiceStateUpdate', voiceStateUpdateSchema);

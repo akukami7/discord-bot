@@ -40,7 +40,7 @@ export const triggerAntiCrash = async (guild, member, reason, client) => {
     if (config && config.antiCrashLogChannel) {
       const channel = guild.channels.cache.get(config.antiCrashLogChannel) || await guild.channels.fetch(config.antiCrashLogChannel).catch(() => null);
       if (channel) {
-        const embed = new EmbedBuilder()
+        const embed = new EmbedBuilder().setColor(0x2B2D31)
           .setColor(0xED4245)
           .setTitle('🚨 СИСТЕМА АНТИКРАШ 🚨')
           .setThumbnail(member.user?.displayAvatarURL({ dynamic: true }) || null)

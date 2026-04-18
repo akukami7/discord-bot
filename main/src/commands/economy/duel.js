@@ -47,7 +47,7 @@ export default {
       amount,
     });
 
-    const embed = new EmbedBuilder()
+    const embed = new EmbedBuilder().setColor(0x2B2D31)
       .setTitle('⚔️ Вызов на дуэль!')
       .setDescription(`${interaction.user} вызывает ${opponent} на дуэль!\n\nСтавка: **${formatNumber(amount)}** 💰\n\n${opponent}, примите или отклоните вызов.`)
       .setColor(client.config.embedAccent)
@@ -88,7 +88,7 @@ export default {
     if (action === 'decline') {
       duel.status = 'expired';
       await duel.save();
-      const embed = new EmbedBuilder()
+      const embed = new EmbedBuilder().setColor(0x2B2D31)
         .setTitle('⚔️ Дуэль отклонена')
         .setDescription(`${interaction.user} отклонил вызов.`)
         .setColor(0xED4245);
@@ -107,7 +107,7 @@ export default {
     if (!chResult) {
       duel.status = 'expired';
       await duel.save();
-      return interaction.editReply({ embeds: [new EmbedBuilder().setDescription('❌ У вызывающего недостаточно монет.').setColor(0xED4245)], components: [] });
+      return interaction.editReply({ embeds: [new EmbedBuilder().setColor(0x2B2D31).setDescription('❌ У вызывающего недостаточно монет.').setColor(0xED4245)], components: [] });
     }
 
     const opResult = await User.findOneAndUpdate(
@@ -122,7 +122,7 @@ export default {
       );
       duel.status = 'expired';
       await duel.save();
-      return interaction.editReply({ embeds: [new EmbedBuilder().setDescription('❌ У принимающего недостаточно монет.').setColor(0xED4245)], components: [] });
+      return interaction.editReply({ embeds: [new EmbedBuilder().setColor(0x2B2D31).setDescription('❌ У принимающего недостаточно монет.').setColor(0xED4245)], components: [] });
     }
 
     const winnerIsChallenger = Math.random() < 0.5;
@@ -138,7 +138,7 @@ export default {
     duel.winnerId = winnerId;
     await duel.save();
 
-    const embed = new EmbedBuilder()
+    const embed = new EmbedBuilder().setColor(0x2B2D31)
       .setTitle('⚔️ Результат дуэли')
       .setDescription(`🎉 <@${winnerId}> побеждает и забирает **${formatNumber(amount)}** 💰!\n\n😢 <@${loserId}> проиграл.`)
       .setColor(0x57F287);

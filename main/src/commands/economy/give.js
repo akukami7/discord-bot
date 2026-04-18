@@ -60,7 +60,7 @@ export default {
       description: `Перевод ${interaction.user.displayName} → ${target.displayName}`,
     });
 
-    const embed = new EmbedBuilder()
+    const embed = new EmbedBuilder().setColor(0x2B2D31)
       .setDescription(`✅ ${interaction.user} передал **${formatNumber(amount)}** 💰 пользователю ${target}`)
       .setColor(0x57F287);
 

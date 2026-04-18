@@ -24,7 +24,7 @@ export default {
         return interaction.editReply({ content: `ℹ️ Нет данных о сообщениях для ${user}.` });
       }
 
-      const embed = new EmbedBuilder()
+      const embed = new EmbedBuilder().setColor(0x2B2D31)
         .setColor(client.config.embedColor)
         .setTitle(`📊 Активность: ${user.username}`)
         .addFields(
@@ -52,7 +52,7 @@ export default {
       return `**${i + 1}.** ${username} • ${formatNumber(s.messagesCount)} сообщений`;
     }).join('\n');
 
-    const embed = new EmbedBuilder()
+    const embed = new EmbedBuilder().setColor(0x2B2D31)
       .setColor(client.config.embedColor)
       .setTitle('📊 Топ текстовой активности')
       .setDescription(description)

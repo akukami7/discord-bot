@@ -12,6 +12,7 @@
     "deploy:tickets": "node deploy-commands.js tickets",
     "deploy:main": "node deploy-commands.js main",
     "deploy:moderator": "node deploy-commands.js moderator",
+    "deploy:cases": "node deploy-commands.js cases",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "test": "echo \"Error: no test specified\" && exit 1"

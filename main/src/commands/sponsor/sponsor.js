@@ -38,7 +38,7 @@ export default {
         lines.push(`**${role.name}** — ${members}`);
       }
 
-      const embed = new EmbedBuilder()
+      const embed = new EmbedBuilder().setColor(0x2B2D31)
         .setTitle('⭐ Спонсоры')
         .setDescription(lines.join('\n\n'))
         .setColor(client.config.embedAccent);

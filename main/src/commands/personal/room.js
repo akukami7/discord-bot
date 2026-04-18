@@ -35,7 +35,7 @@ export default {
 
       const channel = interaction.guild.channels.cache.get(pr.channelId);
 
-      const embed = new EmbedBuilder()
+      const embed = new EmbedBuilder().setColor(0x2B2D31)
         .setTitle('🏠 Личная комната')
         .addFields(
           { name: 'Название', value: pr.name, inline: true },

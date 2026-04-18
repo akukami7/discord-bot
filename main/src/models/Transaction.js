@@ -13,4 +13,4 @@ const transactionSchema = new mongoose.Schema({
 transactionSchema.index({ guildId: 1, fromId: 1, createdAt: -1 });
 transactionSchema.index({ guildId: 1, toId: 1, createdAt: -1 });
 
-export default mongoose.model('MainTransaction', transactionSchema);
+export default mongoose.models.MainTransaction || mongoose.model('MainTransaction', transactionSchema);

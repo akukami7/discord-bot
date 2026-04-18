@@ -1,7 +1,7 @@
 /**
  * Deploy slash commands to Discord
  * Usage: node deploy-commands.js [bot-name]
- * bot-name: 'tickets', 'main', 'moderator', or 'all' (default)
+ * bot-name: 'tickets', 'main', 'moderator', 'cases', or 'all' (default)
  */
 import { REST, Routes } from 'discord.js';
 import fs from 'fs';
@@ -17,31 +17,7 @@ dotenv.config();
 
 const botName = process.argv[2] || 'all';
 
-function getCommandsJSON(botPath) {
-  const commandsPath = path.join(botPath, 'src', 'commands');
-  const commands = [];
-
-  function readDirRecursively(dir) {
-    const entries = fs.readdirSync(dir, { withFileTypes: true });
-    for (const entry of entries) {
-      const fullPath = path.join(dir, entry.name);
-      if (entry.isDirectory()) {
-        readDirRecursively(fullPath);
-      } else if (entry.name.endsWith('.js')) {
-        const command = await import(pathToFileURL(fullPath).href);
-        if (command.default?.data?.toJSON) {
-          commands.push(command.default.data.toJSON());
-        }
-      }
-    }
-  }
-
-  if (fs.existsSync(commandsPath)) {
-    readDirRecursively(commandsPath);
-  }
-
-  return commands;
-}
+// Old sync function removed due to invalid await usage
 
 // Need to use dynamic import for async readDirRecursively
 async function getCommandsJSONAsync(botPath) {
@@ -120,6 +96,12 @@ const bots = {
     guildId: process.env.MOD_GUILD_ID,
     path: path.join(__dirname, 'moderator'),
   },
+  cases: {
+    token: process.env.CASES_TOKEN,
+    clientId: process.env.CASES_CLIENT_ID,
+    guildId: process.env.CASES_GUILD_ID,
+    path: path.join(__dirname, 'Cases'),
+  },
 };
 
 if (botName === 'all') {
@@ -129,6 +111,6 @@ if (botName === 'all') {
 } else if (bots[botName]) {
   await deployBot(bots[botName], botName);
 } else {
-  console.error(`Unknown bot: ${botName}. Use: tickets, main, moderator, or all`);
+  console.error(`Unknown bot: ${botName}. Use: tickets, main, moderator, cases, or all`);
   process.exit(1);
 }

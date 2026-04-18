@@ -26,4 +26,4 @@ const violationHistorySchema = new mongoose.Schema({
 violationHistorySchema.index({ guildId: 1, userId: 1, createdAt: -1 });
 violationHistorySchema.index({ guildId: 1, moderatorId: 1, createdAt: -1 });
 
-export default mongoose.model('ViolationHistory', violationHistorySchema);
+export default mongoose.models.ViolationHistory || mongoose.model('ViolationHistory', violationHistorySchema);

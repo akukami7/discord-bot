@@ -32,4 +32,4 @@ staffSchema.index({ guildId: 1, actionsCount: -1 });
 staffSchema.index({ guildId: 1, messagesCount: -1 });
 staffSchema.index({ guildId: 1, voiceOnline: -1 });
 
-export default mongoose.model('Staff', staffSchema);
+export default mongoose.models.Staff || mongoose.model('Staff', staffSchema);

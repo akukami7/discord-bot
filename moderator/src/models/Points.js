@@ -20,4 +20,4 @@ const pointsSchema = new mongoose.Schema({
 pointsSchema.index({ guildId: 1, userId: 1 }, { unique: true });
 pointsSchema.index({ guildId: 1, points: -1 });
 
-export default mongoose.model('Points', pointsSchema);
+export default mongoose.models.Points || mongoose.model('Points', pointsSchema);

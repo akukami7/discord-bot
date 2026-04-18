@@ -19,4 +19,4 @@ const ticketSchema = new mongoose.Schema({
 
 ticketSchema.index({ guildId: 1, creatorId: 1, status: 1 });
 
-export default mongoose.model('Ticket', ticketSchema);
+export default mongoose.models.Ticket || mongoose.model('Ticket', ticketSchema);
