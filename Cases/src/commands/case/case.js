@@ -144,10 +144,9 @@ export default {
 
     if (history.length === 0) {
       const embed = new EmbedBuilder().setColor(0x2B2D31)
-        .setTitle(`📜 История кейсов — ${interaction.user.displayName}`)
-        .setDescription('Вы ещё не открывали кейсы.')
-        .setColor(0x2B2D31)
-        .setFooter({ text: `Angelss Cases • ${new Date().toLocaleDateString('ru-RU')}` });
+        .setTitle(`История наград с кейсов — ${interaction.user.displayName}`)
+        .setDescription('**Список пуст**')
+        .setThumbnail('https://i.imgur.com/rD9I6v1.jpeg');
       return interaction.editReply({ embeds: [embed] });
     }
 
@@ -159,10 +158,10 @@ export default {
     });
 
     const embed = new EmbedBuilder().setColor(0x2B2D31)
-      .setTitle(`📜 История кейсов — ${interaction.user.displayName}`)
+      .setTitle(`История наград с кейсов — ${interaction.user.displayName}`)
       .setDescription(lines.join('\n'))
-      .setColor(0x2B2D31)
-      .setFooter({ text: `Всего открыто: ${formatNumber(history.length)} кейсов • Angelss Cases` });
+      .setThumbnail('https://i.imgur.com/rD9I6v1.jpeg')
+      .setFooter({ text: `Всего открыто: ${formatNumber(history.length)} кейсов` });
 
     await interaction.editReply({ embeds: [embed] });
   },
