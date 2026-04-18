@@ -22,7 +22,7 @@ export default {
     const ranks = ['🥇', '🥈', '🥉', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟'];
     let embed = new EmbedBuilder().setColor(0x2B2D31);
     let lines = [];
-    let topDiscordId = null; // Store the first place user's ID for the thumbnail
+    let topDiscordId = null;
 
     if (sub === 'balance') {
       const users = await User.find({ guildId, balance: { $gt: 0 } })
@@ -30,12 +30,10 @@ export default {
         .limit(10);
 
       lines = users.map((u, i) => {
-        const rank = ranks[i] || `\`${i + 1}.\``;
-        return `${rank} **|** <@${u.userId}>\n> 🦋 **${formatNumber(u.balance)}**\n`;
+        return `${ranks[i]} <@${u.userId}> — **${formatNumber(u.balance)}** 🦋`;
       });
       if (users.length > 0) topDiscordId = users[0].userId;
-
-      embed.setTitle('🦋 Топ 10 по балансу');
+      embed.setTitle('Топ 10 пользователей по балансу');
     }
 
     else if (sub === 'level') {
@@ -44,12 +42,10 @@ export default {
         .limit(10);
 
       lines = users.map((u, i) => {
-        const rank = ranks[i] || `\`${i + 1}.\``;
-        return `${rank} **|** <@${u.userId}>\n> 🏆 **${u.level}** уровень  •  ✨ **${formatNumber(u.totalXp)}** XP\n`;
+        return `${ranks[i]} <@${u.userId}> — **${u.level}** уровень`;
       });
       if (users.length > 0) topDiscordId = users[0].userId;
-
-      embed.setTitle('🏆 Топ 10 по уровню');
+      embed.setTitle('Топ 10 пользователей по уровню');
     }
 
     else if (sub === 'love') {
@@ -58,12 +54,10 @@ export default {
         .limit(10);
 
       lines = marriages.map((m, i) => {
-        const rank = ranks[i] || `\`${i + 1}.\``;
-        return `${rank} **|** <@${m.user1Id}> ❤️ <@${m.user2Id}>\n> ⏳ **${formatTime(m.pairOnline)}**\n`;
+        return `${ranks[i]} <@${m.user1Id}> ❤️ <@${m.user2Id}> — **${formatTime(m.pairOnline)}**`;
       });
-      if (marriages.length > 0) topDiscordId = marriages[0].user1Id; // Pick first partner for avatar
-
-      embed.setTitle('❤️ Топ 10 пар по онлайну');
+      if (marriages.length > 0) topDiscordId = marriages[0].user1Id;
+      embed.setTitle('Топ 10 пар по онлайну');
     }
 
     else if (sub === 'online') {
@@ -72,12 +66,10 @@ export default {
         .limit(10);
 
       lines = users.map((u, i) => {
-        const rank = ranks[i] || `\`${i + 1}.\``;
-        return `${rank} **|** <@${u.userId}>\n> 🎙️ **${formatTime(u.voiceOnline)}**\n`;
+        return `${ranks[i]} <@${u.userId}> — **${formatTime(u.voiceOnline)}**`;
       });
       if (users.length > 0) topDiscordId = users[0].userId;
-
-      embed.setTitle('🎙️ Топ 10 по онлайну');
+      embed.setTitle('Топ 10 по голосовому онлайну');
     }
 
     else if (sub === 'rooms') {
@@ -86,12 +78,10 @@ export default {
         .limit(10);
 
       lines = rooms.map((r, i) => {
-        const rank = ranks[i] || `\`${i + 1}.\``;
-        return `${rank} **|** **${r.name}**\n> 👑 Владелец: <@${r.userId}>  •  🎙️ **${formatTime(r.voiceOnline)}**\n`;
+        return `${ranks[i]} **${r.name}** (<@${r.userId}>) — **${formatTime(r.voiceOnline)}**`;
       });
       if (rooms.length > 0) topDiscordId = rooms[0].userId;
-
-      embed.setTitle('🏠 Топ 10 личных комнат');
+      embed.setTitle('Топ 10 личных комнат');
     }
 
     embed.setDescription(lines.length ? lines.join('\n') : 'Список пока пуст.');
