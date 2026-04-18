@@ -116,7 +116,7 @@ export default {
     const embed = new EmbedBuilder().setColor(0x2B2D31)
       .setTitle(`Баланс кейсов — ${interaction.user.displayName}`)
       .setDescription(`> Количество кейсов:\n\`\`\`\n${formatNumber(casesOpened)}\n\`\`\``)
-      .setThumbnail('https://i.imgur.com/rD9I6v1.jpeg');
+      .setThumbnail(interaction.user.displayAvatarURL({ size: 256 }));
 
     await interaction.editReply({ embeds: [embed] });
   },
@@ -135,7 +135,7 @@ export default {
       const embed = new EmbedBuilder().setColor(0x2B2D31)
         .setTitle(`История наград с кейсов — ${interaction.user.displayName}`)
         .setDescription('**Список пуст**')
-        .setThumbnail('https://i.imgur.com/rD9I6v1.jpeg');
+        .setThumbnail(interaction.user.displayAvatarURL({ size: 256 }));
       return interaction.editReply({ embeds: [embed] });
     }
 
@@ -149,7 +149,7 @@ export default {
     const embed = new EmbedBuilder().setColor(0x2B2D31)
       .setTitle(`История наград с кейсов — ${interaction.user.displayName}`)
       .setDescription(lines.join('\n'))
-      .setThumbnail('https://i.imgur.com/rD9I6v1.jpeg')
+      .setThumbnail(interaction.user.displayAvatarURL({ size: 256 }))
       .setFooter({ text: `Всего открыто: ${formatNumber(history.length)} кейсов` });
 
     await interaction.editReply({ embeds: [embed] });
@@ -175,7 +175,7 @@ export default {
     const embed = new EmbedBuilder().setColor(0x2B2D31)
       .setTitle('Открыть кейс')
       .setDescription(`<@${userId}>, у Вас **нет** кейсов`)
-      .setThumbnail('https://i.imgur.com/rD9I6v1.jpeg'); // Neo Image
+      .setThumbnail(interaction.user.displayAvatarURL({ size: 256 })); // User Avatar
 
     const row = new ActionRowBuilder().addComponents(
       new ButtonBuilder()
@@ -194,7 +194,7 @@ export default {
         const expEmbed = new EmbedBuilder().setColor(0x2B2D31)
           .setTitle('Открыть кейс')
           .setDescription(`<@${userId}>, время на покупку **вышло**.`)
-          .setThumbnail('https://i.imgur.com/rD9I6v1.jpeg');
+          .setThumbnail(interaction.user.displayAvatarURL({ size: 256 }));
         await interaction.editReply({ embeds: [expEmbed], components: [] }).catch(() => {});
       }
     }, 30000);
@@ -231,7 +231,7 @@ export default {
       const errEmbed = new EmbedBuilder().setColor(0x2B2D31)
         .setTitle('Купить кейс')
         .setDescription(`<@${userId}>, у Вас нет **${CASE_PRICE}** 🦋`)
-        .setThumbnail('https://i.imgur.com/rD9I6v1.jpeg');
+        .setThumbnail(interaction.user.displayAvatarURL({ size: 256 }));
       return interaction.editReply({ embeds: [errEmbed], components: [] });
     }
 
