@@ -19,104 +19,95 @@ export default {
 
     await interaction.deferReply();
 
+    const ranks = ['🥇', '🥈', '🥉', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟'];
+    let embed = new EmbedBuilder().setColor(0x2B2D31);
+    let lines = [];
+    let topDiscordId = null; // Store the first place user's ID for the thumbnail
+
     if (sub === 'balance') {
       const users = await User.find({ guildId, balance: { $gt: 0 } })
         .sort({ balance: -1 })
         .limit(10);
 
-      const numberEmojis = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟'];
-
-      const lines = users.map((u, i) => {
-        return `${numberEmojis[i]} <@${u.userId}> — **${formatNumber(u.balance)}**`;
+      lines = users.map((u, i) => {
+        const rank = ranks[i] || `\`${i + 1}.\``;
+        return `${rank} **|** <@${u.userId}>\n> 🦋 **${formatNumber(u.balance)}**\n`;
       });
+      if (users.length > 0) topDiscordId = users[0].userId;
 
-      const embed = new EmbedBuilder().setColor(0x2B2D31)
-        .setTitle('Топ 10 пользователей по балансу')
-        .setDescription(lines.length ? lines.join('\n') : 'Нет данных.');
-
-      // Set first user's avatar as thumbnail
-      if (users.length > 0) {
-        try {
-          const firstUser = await client.users.fetch(users[0].userId);
-          embed.setThumbnail(firstUser.displayAvatarURL({ size: 256 }));
-        } catch (err) {
-          // ignore fetch errors
-        }
-      }
-
-      return interaction.editReply({ embeds: [embed] });
+      embed.setTitle('🦋 Топ 10 по балансу');
     }
 
-    if (sub === 'level') {
+    else if (sub === 'level') {
       const users = await User.find({ guildId, level: { $gt: 0 } })
         .sort({ level: -1, totalXp: -1 })
         .limit(10);
 
-      const lines = users.map((u, i) => {
-        const medal = i < 3 ? ['🥇', '🥈', '🥉'][i] : `\`${i + 1}.\``;
-        return `${medal} <@${u.userId}> — **${u.level}** уровень (${formatNumber(u.totalXp)} XP)`;
+      lines = users.map((u, i) => {
+        const rank = ranks[i] || `\`${i + 1}.\``;
+        return `${rank} **|** <@${u.userId}>\n> 🏆 **${u.level}** уровень  •  ✨ **${formatNumber(u.totalXp)}** XP\n`;
       });
+      if (users.length > 0) topDiscordId = users[0].userId;
 
-      const embed = new EmbedBuilder().setColor(0x2B2D31)
-        .setTitle('📊 Топ по уровню')
-        .setDescription(lines.length ? lines.join('\n') : 'Нет данных.')
-        .setColor(client.config.embedAccent);
-
-      return interaction.editReply({ embeds: [embed] });
+      embed.setTitle('🏆 Топ 10 по уровню');
     }
 
-    if (sub === 'love') {
+    else if (sub === 'love') {
       const marriages = await Marriage.find({ guildId, pairOnline: { $gt: 0 } })
         .sort({ pairOnline: -1 })
         .limit(10);
 
-      const lines = marriages.map((m, i) => {
-        const medal = i < 3 ? ['🥇', '🥈', '🥉'][i] : `\`${i + 1}.\``;
-        return `${medal} <@${m.user1Id}> ❤️ <@${m.user2Id}> — **${formatTime(m.pairOnline)}**`;
+      lines = marriages.map((m, i) => {
+        const rank = ranks[i] || `\`${i + 1}.\``;
+        return `${rank} **|** <@${m.user1Id}> ❤️ <@${m.user2Id}>\n> ⏳ **${formatTime(m.pairOnline)}**\n`;
       });
+      if (marriages.length > 0) topDiscordId = marriages[0].user1Id; // Pick first partner for avatar
 
-      const embed = new EmbedBuilder().setColor(0x2B2D31)
-        .setTitle('❤️ Топ пар по онлайну')
-        .setDescription(lines.length ? lines.join('\n') : 'Нет данных.')
-        .setColor(0xEB459E);
-
-      return interaction.editReply({ embeds: [embed] });
+      embed.setTitle('❤️ Топ 10 пар по онлайну');
     }
 
-    if (sub === 'online') {
+    else if (sub === 'online') {
       const users = await User.find({ guildId, voiceOnline: { $gt: 0 } })
         .sort({ voiceOnline: -1 })
         .limit(10);
 
-      const lines = users.map((u, i) => {
-        const medal = i < 3 ? ['🥇', '🥈', '🥉'][i] : `\`${i + 1}.\``;
-        return `${medal} <@${u.userId}> — **${formatTime(u.voiceOnline)}**`;
+      lines = users.map((u, i) => {
+        const rank = ranks[i] || `\`${i + 1}.\``;
+        return `${rank} **|** <@${u.userId}>\n> 🎙️ **${formatTime(u.voiceOnline)}**\n`;
       });
+      if (users.length > 0) topDiscordId = users[0].userId;
 
-      const embed = new EmbedBuilder().setColor(0x2B2D31)
-        .setTitle('🎙️ Топ по голосовому онлайну')
-        .setDescription(lines.length ? lines.join('\n') : 'Нет данных.')
-        .setColor(client.config.embedAccent);
-
-      return interaction.editReply({ embeds: [embed] });
+      embed.setTitle('🎙️ Топ 10 по онлайну');
     }
 
-    if (sub === 'rooms') {
+    else if (sub === 'rooms') {
       const rooms = await PersonalRoom.find({ guildId, voiceOnline: { $gt: 0 } })
         .sort({ voiceOnline: -1 })
         .limit(10);
 
-      const lines = rooms.map((r, i) => {
-        const medal = i < 3 ? ['🥇', '🥈', '🥉'][i] : `\`${i + 1}.\``;
-        return `${medal} **${r.name}** (<@${r.userId}>) — **${formatTime(r.voiceOnline)}**`;
+      lines = rooms.map((r, i) => {
+        const rank = ranks[i] || `\`${i + 1}.\``;
+        return `${rank} **|** **${r.name}**\n> 👑 Владелец: <@${r.userId}>  •  🎙️ **${formatTime(r.voiceOnline)}**\n`;
       });
+      if (rooms.length > 0) topDiscordId = rooms[0].userId;
 
-      const embed = new EmbedBuilder().setColor(0x2B2D31)
-        .setTitle('🏠 Топ личных комнат')
-        .setDescription(lines.length ? lines.join('\n') : 'Нет данных.')
-        .setColor(client.config.embedAccent);
-
-      return interaction.editReply({ embeds: [embed] });
+      embed.setTitle('🏠 Топ 10 личных комнат');
     }
+
+    embed.setDescription(lines.length ? lines.join('\n') : 'Список пока пуст.');
+
+    // Fetch the 1st place avatar as thumbnail
+    if (topDiscordId) {
+      try {
+        const topUser = await client.users.fetch(topDiscordId);
+        if (topUser) {
+          embed.setThumbnail(topUser.displayAvatarURL({ size: 256 }));
+        }
+      } catch (err) {
+        // ignore fetch failures
+      }
+    }
+
+    return interaction.editReply({ embeds: [embed] });
   },
 };
