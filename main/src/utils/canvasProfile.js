@@ -5,20 +5,6 @@ import path from 'path';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 GlobalFonts.registerFromPath(path.join(__dirname, '..', 'assets', 'fonts', 'Inter.ttf'), 'Inter');
 
-const bgImagePath = path.join(__dirname, '..', 'assets', 'Основа профиля (пример).png');
-let bgImage = null;
-
-async function getBgImage() {
-  if (!bgImage) {
-    try {
-      bgImage = await loadImage(bgImagePath);
-    } catch {
-      bgImage = null;
-    }
-  }
-  return bgImage;
-}
-
 export async function generateProfileCard({
   username,
   avatarURL,
@@ -41,16 +27,12 @@ export async function generateProfileCard({
   const canvas = createCanvas(W, H);
   const ctx = canvas.getContext('2d');
 
-  const bg = await getBgImage();
-  if (bg) {
-    ctx.drawImage(bg, 0, 0, W, H);
-  } else {
-    const grad = ctx.createLinearGradient(0, 0, W, H);
-    grad.addColorStop(0, '#1a1b1e');
-    grad.addColorStop(1, '#2b2d31');
-    ctx.fillStyle = grad;
-    ctx.fillRect(0, 0, W, H);
-  }
+  // ── Background gradient ──
+  const bg = ctx.createLinearGradient(0, 0, W, H);
+  bg.addColorStop(0, '#1a1b1e');
+  bg.addColorStop(1, '#2b2d31');
+  ctx.fillStyle = bg;
+  ctx.fillRect(0, 0, W, H);
 
   // ── Helper: glass box ──
   const glass = (x, y, w, h, radius = 16) => {
@@ -144,11 +126,11 @@ export async function generateProfileCard({
     ctx.fillText(value, LX + LW - 40, y);
   };
 
-  drawRankRow('⊙', 'Топ по онлайну', `#${onlineRank}`, rankStartY + 35);
-  drawRankRow('♡', 'Топ по балансу', `#${balanceRank}`, rankStartY + 75);
+  drawRankRow('⊙', 'Топ по онлайну', `#${onlineRank}`, rankStartY + 25);
+  drawRankRow('♡', 'Топ по балансу', `#${balanceRank}`, rankStartY + 65);
 
   // ── Separator ──
-  const balY = rankStartY + 105;
+  const balY = rankStartY + 95;
   sep(LX + 25, LX + LW - 25, balY);
 
   // ── Balance rows ──
@@ -163,8 +145,8 @@ export async function generateProfileCard({
     ctx.fillText(value, LX + LW - 40, y);
   };
 
-  drawBalRow('⚬  Монеты', balance.toLocaleString('ru-RU'), balY + 35);
-  drawBalRow('○  Звёзды', stars.toLocaleString('ru-RU'), balY + 75);
+  drawBalRow('⚬  Монеты', balance.toLocaleString('ru-RU'), balY + 25);
+  drawBalRow('○  Звёзды', stars.toLocaleString('ru-RU'), balY + 65);
 
   // ============================
   //  RIGHT PANEL  (x:380)
@@ -173,14 +155,17 @@ export async function generateProfileCard({
   const RW = W - RX - 20; // 624
   const gap = 12;
 
-  // ── Row 1: Marriage + Stats (side by side) ──
+  // ── Row 1 & 2: Left column ──
   const r1Y = 20;
-  const r1H = 120;
-  const midW = 290;
-  const statW = RW - midW - gap;
+  const box1H = 95;
+  const box2H = 95;
+  const r2Y = r1Y + box1H + gap;
 
-  // Marriage box
-  glass(RX, r1Y, midW, r1H);
+  const leftColW = 290;
+  const rightColW = RW - leftColW - gap;
+
+  // Marriage box (Row 1, left)
+  glass(RX, r1Y, leftColW, box1H);
   ctx.textAlign = 'left';
   ctx.fillStyle = '#ffffff';
   ctx.font = 'bold 18px Inter';
@@ -190,10 +175,32 @@ export async function generateProfileCard({
   const mText = marriageText.length > 28 ? marriageText.slice(0, 28) + '...' : marriageText;
   ctx.fillText(mText, RX + 20, r1Y + 60);
 
-  // Stats box (right side of row 1 + row 2)
-  const statsBoxX = RX + midW + gap;
-  const statsBoxH = r1H * 2 + gap;
-  glass(statsBoxX, r1Y, statW, statsBoxH);
+  // Clan & Partner boxes (Row 2, left)
+  const smallW = (leftColW - gap) / 2;
+  // Clan
+  glass(RX, r2Y, smallW, box2H);
+  ctx.textAlign = 'left';
+  ctx.fillStyle = '#ffffff';
+  ctx.font = 'bold 16px Inter';
+  ctx.fillText('Клан', RX + 15, r2Y + 35);
+  ctx.fillStyle = 'rgba(255,255,255,0.5)';
+  ctx.font = '13px Inter';
+  ctx.fillText('Нет клана', RX + 15, r2Y + 60);
+
+  // Partner
+  glass(RX + smallW + gap, r2Y, smallW, box2H);
+  ctx.textAlign = 'left';
+  ctx.fillStyle = '#ffffff';
+  ctx.font = 'bold 16px Inter';
+  ctx.fillText('Партнёр', RX + smallW + gap + 15, r2Y + 35);
+  ctx.fillStyle = 'rgba(255,255,255,0.5)';
+  ctx.font = '13px Inter';
+  ctx.fillText('Нет партнёра', RX + smallW + gap + 15, r2Y + 60);
+
+  // ── Stats box (Row 1+2, right) ──
+  const statsX = RX + leftColW + gap;
+  const statsH = box1H + box2H + gap;
+  glass(statsX, r1Y, rightColW, statsH);
 
   const statLabels = [
     { label: 'Голосовой онлайн', val: voiceOnlineFormatted },
@@ -202,90 +209,90 @@ export async function generateProfileCard({
     { label: 'Кол-во личных ролей', val: personalRoles.toString() }
   ];
 
-  const statStartY = r1Y + 35;
-  const statGap = (statsBoxH - 40) / statLabels.length;
+  const statStartY = r1Y + 40;
+  const statGap = (statsH - 50) / (statLabels.length - 1);
 
   for (let i = 0; i < statLabels.length; i++) {
     const sy = statStartY + i * statGap;
     ctx.textAlign = 'left';
     ctx.fillStyle = 'rgba(255,255,255,0.5)';
     ctx.font = '13px Inter';
-    ctx.fillText(statLabels[i].label, statsBoxX + 15, sy);
+    ctx.fillText(statLabels[i].label, statsX + 15, sy);
     ctx.textAlign = 'right';
     ctx.fillStyle = '#ffffff';
     ctx.font = 'bold 15px Inter';
-    ctx.fillText(statLabels[i].val, statsBoxX + statW - 15, sy);
+    ctx.fillText(statLabels[i].val, statsX + rightColW - 15, sy);
   }
 
-  // ── Row 2: Hints (under Marriage) ──
-  const r2Y = r1Y + r1H + gap;
-  const r2H = r1H;
-  const hintW = (midW - gap) / 2;
+  // ── Row 3: Hints ──
+  const r3Y = r2Y + box2H + gap;
+  const hintBoxH = 85;
+  const wideHintW = (RW - gap) / 2;
 
   // /case open hint
-  glass(RX, r2Y, hintW, r2H);
+  glass(RX, r3Y, wideHintW, hintBoxH);
   ctx.textAlign = 'left';
   ctx.fillStyle = '#ffffff';
   ctx.font = 'bold 16px Inter';
-  ctx.fillText('/case open', RX + 15, r2Y + 40);
+  ctx.fillText('/case open', RX + 20, r3Y + 35);
   ctx.fillStyle = 'rgba(255,255,255,0.4)';
-  ctx.font = '12px Inter';
-  ctx.fillText('Открывай кейсы', RX + 15, r2Y + 62);
+  ctx.font = '13px Inter';
+  ctx.fillText('Скорее открывай кейсы', RX + 20, r3Y + 60);
 
   // /timely hint
-  glass(RX + hintW + gap, r2Y, hintW, r2H);
+  const h2X = RX + wideHintW + gap;
+  glass(h2X, r3Y, wideHintW, hintBoxH);
   ctx.textAlign = 'left';
   ctx.fillStyle = '#ffffff';
   ctx.font = 'bold 16px Inter';
-  ctx.fillText('/timely', RX + hintW + gap + 15, r2Y + 40);
+  ctx.fillText('/timely', h2X + 20, r3Y + 35);
   ctx.fillStyle = 'rgba(255,255,255,0.4)';
-  ctx.font = '12px Inter';
-  ctx.fillText('Забирай награду', RX + hintW + gap + 15, r2Y + 62);
+  ctx.font = '13px Inter';
+  ctx.fillText('Пора забирать награду', h2X + 20, r3Y + 60);
 
-  // ── Row 3: Level block (full width) ──
-  const r3Y = r2Y + r2H + gap;
-  const r3H = H - 20 - r3Y;
-  glass(RX, r3Y, RW, r3H);
+  // ── Row 4: Level Block ──
+  const r4Y = r3Y + hintBoxH + gap;
+  const r4H = H - 20 - r4Y;
+  glass(RX, r4Y, RW, r4H);
 
-  // Level number (big & centered)
-  const lvlCenterX = RX + RW / 2;
-  const lvlCenterY = r3Y + r3H / 2;
+  // Arch Progress Bar
+  const archCenterX = RX + RW / 2;
+  const archCenterY = r4Y + r4H - 40; 
+  const archRadius = 130;
 
-  ctx.textAlign = 'center';
-  ctx.fillStyle = '#ffffff';
-  ctx.font = `bold ${level > 99 ? 80 : 100}px Inter`;
-  ctx.fillText(`${level}`, lvlCenterX, lvlCenterY + 15);
-
-  ctx.fillStyle = 'rgba(255,255,255,0.4)';
-  ctx.font = '18px Inter';
-  ctx.fillText('УРОВЕНЬ', lvlCenterX, lvlCenterY + 50);
-
-  // XP progress bar at bottom of level block
-  const barW = RW - 60;
-  const barH = 10;
-  const barX = RX + 30;
-  const barY = r3Y + r3H - 35;
-
-  // BG bar
+  // BG Arch
   ctx.beginPath();
-  ctx.roundRect(barX, barY, barW, barH, 5);
-  ctx.fillStyle = 'rgba(255,255,255,0.1)';
-  ctx.fill();
+  ctx.arc(archCenterX, archCenterY, archRadius, Math.PI, 0);
+  ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+  ctx.lineWidth = 14;
+  ctx.lineCap = 'round';
+  ctx.stroke();
 
-  // FG bar
+  // FG Arch
   const progress = Math.min(Math.max(xp / (nextXp || 1), 0), 1);
   if (progress > 0) {
     ctx.beginPath();
-    ctx.roundRect(barX, barY, barW * progress, barH, 5);
-    ctx.fillStyle = '#ffffff';
-    ctx.fill();
+    ctx.arc(archCenterX, archCenterY, archRadius, Math.PI, Math.PI + (Math.PI * progress));
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 14;
+    ctx.lineCap = 'round';
+    ctx.stroke();
   }
 
-  // XP text
-  ctx.fillStyle = 'rgba(255,255,255,0.5)';
-  ctx.font = '13px Inter';
+  // Level Text Inside Arch
   ctx.textAlign = 'center';
-  ctx.fillText(`${xp} / ${nextXp} XP`, lvlCenterX, barY - 8);
+  ctx.fillStyle = '#ffffff';
+  ctx.font = `bold ${level > 99 ? 60 : 70}px Inter`;
+  ctx.fillText(`${level}`, archCenterX, archCenterY - 30);
+
+  ctx.fillStyle = 'rgba(255,255,255,0.4)';
+  ctx.font = '16px Inter';
+  ctx.fillText('УРОВЕНЬ', archCenterX, archCenterY - 5);
+
+  // XP Text Below Arch
+  ctx.fillStyle = 'rgba(255,255,255,0.6)';
+  ctx.font = '14px Inter';
+  ctx.fillText(`${xp} / ${nextXp} XP`, archCenterX, archCenterY + 25);
 
   return await canvas.encode('png');
 }
