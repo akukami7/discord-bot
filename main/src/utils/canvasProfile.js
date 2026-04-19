@@ -257,42 +257,46 @@ export async function generateProfileCard({
 
   // Arch Progress Bar
   const archCenterX = RX + RW / 2;
-  const archCenterY = r4Y + r4H - 40; 
-  const archRadius = 130;
+  const archCenterY = r4Y + r4H - 30; 
+  const archRadius = 110;
 
   // BG Arch
   ctx.beginPath();
   ctx.arc(archCenterX, archCenterY, archRadius, Math.PI, 0);
   ctx.strokeStyle = 'rgba(255,255,255,0.08)';
-  ctx.lineWidth = 14;
+  ctx.lineWidth = 6;
   ctx.lineCap = 'round';
   ctx.stroke();
 
   // FG Arch
   const progress = Math.min(Math.max(xp / (nextXp || 1), 0), 1);
   if (progress > 0) {
+    ctx.save();
     ctx.beginPath();
     ctx.arc(archCenterX, archCenterY, archRadius, Math.PI, Math.PI + (Math.PI * progress));
     ctx.strokeStyle = '#ffffff';
-    ctx.lineWidth = 14;
+    ctx.lineWidth = 6;
     ctx.lineCap = 'round';
+    ctx.shadowColor = 'rgba(255,255,255,0.8)';
+    ctx.shadowBlur = 12;
     ctx.stroke();
+    ctx.restore();
   }
 
   // Level Text Inside Arch
   ctx.textAlign = 'center';
   ctx.fillStyle = '#ffffff';
-  ctx.font = `bold ${level > 99 ? 60 : 70}px Inter`;
-  ctx.fillText(`${level}`, archCenterX, archCenterY - 30);
+  ctx.font = `bold 52px Inter`;
+  ctx.fillText(`${level}`, archCenterX, archCenterY - 50);
 
   ctx.fillStyle = 'rgba(255,255,255,0.4)';
-  ctx.font = '16px Inter';
-  ctx.fillText('УРОВЕНЬ', archCenterX, archCenterY - 5);
+  ctx.font = 'bold 13px Inter';
+  ctx.fillText('УРОВЕНЬ', archCenterX, archCenterY - 26);
 
   // XP Text Below Arch
   ctx.fillStyle = 'rgba(255,255,255,0.6)';
-  ctx.font = '14px Inter';
-  ctx.fillText(`${xp} / ${nextXp} XP`, archCenterX, archCenterY + 25);
+  ctx.font = 'bold 13px Inter';
+  ctx.fillText(`${xp} / ${nextXp} XP`, archCenterX, archCenterY - 4);
 
   return await canvas.encode('png');
 }
