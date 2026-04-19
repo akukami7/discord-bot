@@ -27,10 +27,24 @@ for (const key of requiredRootVars) {
 // Bot configurations with environment variable mappings
 const bots = [
   {
+    name: 'TicketsBot',
+    cwd: __dirname,
+    envMap: {
+      TOKEN: process.env.TOKEN,
+      CLIENT_ID: process.env.CLIENT_ID,
+      GUILD_ID: process.env.GUILD_ID,
+      MONGO_URI: process.env.MONGO_URI,
+      EMBED_COLOR: process.env.EMBED_COLOR,
+      EMBED_ACCENT: process.env.EMBED_ACCENT,
+      TICKETS_CATEGORY_ID: process.env.TICKETS_CATEGORY_ID,
+      TICKETS_LOG_CHANNEL_ID: process.env.TICKETS_LOG_CHANNEL_ID,
+    },
+  },
+  {
     name: 'MainBot',
     cwd: path.join(__dirname, 'main'),
     envMap: {
-      TOKEN: process.env.MAIN_TOKEN || process.env.TOKEN, // fallback to single token
+      TOKEN: process.env.MAIN_TOKEN || process.env.TOKEN,
       CLIENT_ID: process.env.MAIN_CLIENT_ID || process.env.CLIENT_ID,
       GUILD_ID: process.env.MAIN_GUILD_ID || process.env.GUILD_ID,
       MONGO_URI: process.env.MAIN_MONGO_URI || process.env.MONGO_URI,
@@ -42,6 +56,22 @@ const bots = [
       XP_COOLDOWN: process.env.MAIN_XP_COOLDOWN,
       XP_MIN: process.env.MAIN_XP_MIN,
       XP_MAX: process.env.MAIN_XP_MAX,
+    },
+  },
+  {
+    name: 'ModeratorBot',
+    cwd: path.join(__dirname, 'moderator'),
+    envMap: {
+      TOKEN: process.env.MOD_TOKEN,
+      CLIENT_ID: process.env.MOD_CLIENT_ID,
+      GUILD_ID: process.env.MOD_GUILD_ID,
+      MONGO_URI: process.env.MOD_MONGO_URI,
+      EMBED_COLOR: process.env.MOD_EMBED_COLOR,
+      EMBED_ACCENT: process.env.MOD_EMBED_ACCENT,
+      STAFF_ROLE_ID: process.env.MOD_STAFF_ROLE_ID,
+      ADMIN_PANEL_CHANNEL_ID: process.env.MOD_ADMIN_PANEL_CHANNEL_ID,
+      REPORT_CHANNEL_ID: process.env.MOD_REPORT_CHANNEL_ID,
+      BLACKLIST_LOG_CHANNEL_ID: process.env.MOD_BLACKLIST_LOG_CHANNEL_ID,
     },
   },
   {
