@@ -2,9 +2,6 @@ import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
 import User from '../../models/User.js';
 import Marriage from '../../models/Marriage.js';
 import PersonalRoom from '../../models/PersonalRoom.js';
-import Staff from '../../models/Staff.js';
-import MessageStats from '../../models/MessageStats.js';
-import Points from '../../models/Points.js';
 import { formatNumber, formatTime } from '../../utils/helpers.js';
 
 export default {
@@ -15,11 +12,7 @@ export default {
     .addSubcommand(sub => sub.setName('level').setDescription('Топ 10 по уровню'))
     .addSubcommand(sub => sub.setName('love').setDescription('Топ пар по парному онлайну'))
     .addSubcommand(sub => sub.setName('online').setDescription('Топ 10 по голосовому онлайну'))
-    .addSubcommand(sub => sub.setName('rooms').setDescription('Топ личных комнат по онлайну'))
-    .addSubcommand(subcommand => subcommand.setName('messages').setDescription('Топ по сообщениям (модерация)'))
-    .addSubcommand(subcommand => subcommand.setName('points').setDescription('Топ по баллам (модерация)'))
-    .addSubcommand(subcommand => subcommand.setName('recruitments').setDescription('Топ по наборам (модерация)'))
-    .addSubcommand(subcommand => subcommand.setName('verifications').setDescription('Топ по верификациям (модерация)')),
+    .addSubcommand(sub => sub.setName('rooms').setDescription('Топ личных комнат по онлайну')),
 
   async execute(interaction, client) {
     const sub = interaction.options.getSubcommand();
@@ -61,46 +54,6 @@ export default {
       lines = rooms.map((r, i) => `${ranks[i]} **${r.name}** (<@${r.userId}>) — **${formatTime(r.voiceOnline)}**`);
       if (rooms.length > 0) topDiscordId = rooms[0].userId;
       embed.setTitle('Топ 10 личных комнат');
-    }
-    else if (sub === 'messages') {
-      const stats = await MessageStats.find({ guildId }).sort({ messagesCount: -1 }).limit(10);
-      lines = stats.map((s, i) => {
-        const member = interaction.guild.members.cache.get(s.userId);
-        const username = member ? member.user.username : s.username || 'Unknown';
-        return `${ranks[i]} **${username}** • ${formatNumber(s.messagesCount)} сообщений`;
-      });
-      if (stats.length > 0) topDiscordId = stats[0].userId;
-      embed.setTitle('💬 Топ по сообщениям');
-    }
-    else if (sub === 'points') {
-      const points = await Points.find({ guildId }).sort({ points: -1 }).limit(10);
-      lines = points.map((p, i) => {
-        const member = interaction.guild.members.cache.get(p.userId);
-        const username = member ? member.user.username : 'Unknown';
-        return `${ranks[i]} **${username}** • ${formatNumber(p.points)} баллов`;
-      });
-      if (points.length > 0) topDiscordId = points[0].userId;
-      embed.setTitle('⭐ Топ по баллам');
-    }
-    else if (sub === 'recruitments') {
-      const staff = await Staff.find({ guildId, recruitmentsCount: { $gt: 0 } }).sort({ recruitmentsCount: -1 }).limit(10);
-      lines = staff.map((s, i) => {
-        const member = interaction.guild.members.cache.get(s.userId);
-        const username = member ? member.user.username : s.username || 'Unknown';
-        return `${ranks[i]} **${username}** • ${formatNumber(s.recruitmentsCount)} наборов`;
-      });
-      if (staff.length > 0) topDiscordId = staff[0].userId;
-      embed.setTitle('📋 Топ по наборам');
-    }
-    else if (sub === 'verifications') {
-      const staff = await Staff.find({ guildId, verificationsCount: { $gt: 0 } }).sort({ verificationsCount: -1 }).limit(10);
-      lines = staff.map((s, i) => {
-        const member = interaction.guild.members.cache.get(s.userId);
-        const username = member ? member.user.username : s.username || 'Unknown';
-        return `${ranks[i]} **${username}** • ${formatNumber(s.verificationsCount)} верификаций`;
-      });
-      if (staff.length > 0) topDiscordId = staff[0].userId;
-      embed.setTitle('✅ Топ по верификациям');
     }
 
     embed.setDescription(lines.length ? lines.join('\n') : 'Список пока пуст.');
