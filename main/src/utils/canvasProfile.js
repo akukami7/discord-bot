@@ -5,6 +5,20 @@ import path from 'path';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 GlobalFonts.registerFromPath(path.join(__dirname, '..', 'assets', 'fonts', 'Inter.ttf'), 'Inter');
 
+const bgImagePath = path.join(__dirname, '..', 'assets', 'Основа профиля (пример).png');
+let bgImage = null;
+
+async function getBgImage() {
+  if (!bgImage) {
+    try {
+      bgImage = await loadImage(bgImagePath);
+    } catch {
+      bgImage = null;
+    }
+  }
+  return bgImage;
+}
+
 export async function generateProfileCard({
   username,
   avatarURL,
@@ -27,12 +41,16 @@ export async function generateProfileCard({
   const canvas = createCanvas(W, H);
   const ctx = canvas.getContext('2d');
 
-  // ── Background gradient ──
-  const bg = ctx.createLinearGradient(0, 0, W, H);
-  bg.addColorStop(0, '#1a1b1e');
-  bg.addColorStop(1, '#2b2d31');
-  ctx.fillStyle = bg;
-  ctx.fillRect(0, 0, W, H);
+  const bg = await getBgImage();
+  if (bg) {
+    ctx.drawImage(bg, 0, 0, W, H);
+  } else {
+    const grad = ctx.createLinearGradient(0, 0, W, H);
+    grad.addColorStop(0, '#1a1b1e');
+    grad.addColorStop(1, '#2b2d31');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, W, H);
+  }
 
   // ── Helper: glass box ──
   const glass = (x, y, w, h, radius = 16) => {
