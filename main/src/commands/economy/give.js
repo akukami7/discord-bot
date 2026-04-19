@@ -25,7 +25,7 @@ export default {
 
     // Rate limiting
     const cooldownKey = `give_${interaction.user.id}`;
-    if (giveCooldown.isOnCooldown(cooldownKey, COOLDOWN_MS)) {
+    if (giveCooldown.checkAndSet(cooldownKey, COOLDOWN_MS)) {
       const remaining = giveCooldown.getRemainingTime(cooldownKey, COOLDOWN_MS);
       return interaction.reply({ content: `⏳ Подождите ${Math.ceil(remaining / 1000)}с. перед следующим переводом.`, ephemeral: true });
     }

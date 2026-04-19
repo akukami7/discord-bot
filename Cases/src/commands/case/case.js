@@ -11,9 +11,9 @@ import { formatNumber, formatDate, CooldownManager } from '../../../../shared/ut
 
 const CASE_PRICE = 500;
 
-// Cooldown to prevent spam
 const caseCooldown = new CooldownManager();
 const COOLDOWN_MS = 5000;
+const activePurchases = new Set();
 
 // Case drop table — items with rarity weights
 const CASE_ITEMS = [
@@ -161,7 +161,7 @@ export default {
 
     // Cooldown check
     const cooldownKey = `case_open_${userId}`;
-    if (caseCooldown.isOnCooldown(cooldownKey, COOLDOWN_MS)) {
+    if (caseCooldown.checkAndSet(cooldownKey, COOLDOWN_MS)) {
       const remaining = caseCooldown.getRemainingTime(cooldownKey, COOLDOWN_MS);
       return interaction.reply({
         content: `⏳ Подождите ${Math.ceil(remaining / 1000)}с. перед следующим открытием.`,
@@ -190,7 +190,7 @@ export default {
     setTimeout(async () => {
       const key = `case_expire_${msg.id}`;
       if (!caseCooldown.isOnCooldown(key, 1)) {
-        caseCooldown.cooldowns.set(key, Date.now());
+        caseCooldown.setCooldown(key, 1);
         const expEmbed = new EmbedBuilder().setColor(0x2B2D31)
           .setTitle('Открыть кейс')
           .setDescription(`<@${userId}>, время на покупку **вышло**.`)
@@ -214,9 +214,10 @@ export default {
 
     // Prevent double-click
     const clickKey = `case_click_${interaction.message.id}`;
-    if (caseCooldown.isOnCooldown(clickKey, 1)) {
+    if (activePurchases.has(clickKey)) {
       return interaction.reply({ content: 'Этот кейс уже открыт.', ephemeral: true });
     }
+    activePurchases.add(clickKey);
 
     await interaction.deferUpdate();
 
@@ -228,6 +229,7 @@ export default {
     );
 
     if (!updatedUser) {
+      activePurchases.delete(clickKey);
       const errEmbed = new EmbedBuilder().setColor(0x2B2D31)
         .setTitle('Купить кейс')
         .setDescription(`<@${userId}>, у Вас нет **${CASE_PRICE}** 🦋`)
@@ -285,11 +287,12 @@ export default {
         `${RARITY_NAMES[item.rarity]}\n` +
         `Стоимость: **${formatNumber(item.value)}** 🦋\n` +
         `Итого: **${netText}**\n\n` +
-        `Новый баланс: **${formatNumber(updatedUser.balance - CASE_PRICE + item.value)}** 🦋`
+        `Новый баланс: **${formatNumber(updatedUser.balance + item.value)}** 🦋`
       )
       .setColor(RARITY_COLORS[item.rarity])
       .setFooter({ text: `Angelss Cases • ${new Date().toLocaleDateString('ru-RU')}` });
 
     await interaction.editReply({ embeds: [resultEmbed], components: [] });
+    activePurchases.delete(clickKey);
   },
 };

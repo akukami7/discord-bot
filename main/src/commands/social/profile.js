@@ -33,7 +33,7 @@ export default {
                 const partner = await client.users.fetch(partnerId);
                 marriageText = `С ${partner.username}`;
             } catch (err) {
-                marriageText = `В браке`;
+                marriageText = 'В браке';
             }
         }
 

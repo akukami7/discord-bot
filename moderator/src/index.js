@@ -33,7 +33,7 @@ client.config = {
 
 // Tracking with automatic cleanup
 client.messageCooldowns = new CooldownManager();
-client.voiceJoinTimes = new CooldownManager();
+client.voiceJoinTimes = new Map();
 
 process.on('unhandledRejection', (reason, promise) => {
   console.error('Unhandled Rejection at:', promise, 'reason:', reason);

@@ -11,4 +11,5 @@ export {
   isValidSnowflake,
   sanitizeDiscordName,
   CooldownManager,
+  createFooter,
 } from '../../../shared/utils/helpers.js';

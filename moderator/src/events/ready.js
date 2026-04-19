@@ -22,7 +22,6 @@ export default {
       console.log(chalk.yellow(`Started refreshing ${commandsToRegister.length} application (/) commands.`));
 
       if (process.env.GUILD_ID) {
-        await client.application.commands.set([], process.env.GUILD_ID);
         await client.application.commands.set(commandsToRegister, process.env.GUILD_ID);
         console.log(chalk.green('✓ Successfully reloaded guild (/) commands.'));
       } else {

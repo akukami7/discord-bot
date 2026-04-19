@@ -118,38 +118,46 @@ export function sanitizeDiscordName(name, maxLength = 100) {
 export class CooldownManager {
   constructor() {
     this.cooldowns = new Map();
-    this._cleanupInterval = setInterval(() => this._cleanup(), 60000);
-    this._cleanupInterval.unref?.();
   }
 
   isOnCooldown(key, cooldownMs) {
-    const now = Date.now();
-    const last = this.cooldowns.get(key);
-    if (last && now - last < cooldownMs) {
+    const entry = this.cooldowns.get(key);
+    if (!entry) return false;
+    return Date.now() - entry.timestamp < cooldownMs;
+  }
+
+  setCooldown(key, cooldownMs) {
+    this.cooldowns.set(key, { timestamp: Date.now(), cooldownMs });
+  }
+
+  checkAndSet(key, cooldownMs) {
+    if (this.isOnCooldown(key, cooldownMs)) {
       return true;
     }
-    this.cooldowns.set(key, now);
+    this.setCooldown(key, cooldownMs);
     return false;
   }
 
   getRemainingTime(key, cooldownMs) {
-    const last = this.cooldowns.get(key);
-    if (!last) return 0;
-    const elapsed = Date.now() - last;
+    const entry = this.cooldowns.get(key);
+    if (!entry) return 0;
+    const elapsed = Date.now() - entry.timestamp;
     return Math.max(0, cooldownMs - elapsed);
   }
 
-  _cleanup() {
-    const now = Date.now();
-    for (const [key, timestamp] of this.cooldowns.entries()) {
-      if (now - timestamp > 300000) { // 5 minutes
-        this.cooldowns.delete(key);
-      }
-    }
+  delete(key) {
+    this.cooldowns.delete(key);
   }
 
-  destroy() {
-    clearInterval(this._cleanupInterval);
+  get(key) {
+    return this.cooldowns.get(key);
+  }
+
+  has(key) {
+    return this.cooldowns.has(key);
+  }
+
+  clear() {
     this.cooldowns.clear();
   }
 }

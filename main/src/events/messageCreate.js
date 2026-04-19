@@ -19,25 +19,25 @@ export default {
 
     // XP Cooldown check using CooldownManager
     const cooldownKey = `${guildId}-${userId}`;
-    if (client.xpCooldowns.isOnCooldown(cooldownKey, client.config.xpCooldown)) return;
+    if (client.xpCooldowns.checkAndSet(cooldownKey, client.config.xpCooldown)) return;
 
     const xpGain = randomInt(client.config.xpMin, client.config.xpMax);
 
     userMsg.xp += xpGain;
     userMsg.totalXp += xpGain;
-    
+
     // Check level up
     const xpNeeded = xpForLevel(userMsg.level);
     if (userMsg.xp >= xpNeeded) {
       userMsg.xp -= xpNeeded;
       userMsg.level += 1;
-      
+
       // Level up notification
       message.channel.send({
         content: `🎉 ${message.author} достиг **${userMsg.level}** уровня!`
       }).catch(() => {});
     }
-    
+
     await userMsg.save();
   },
 };

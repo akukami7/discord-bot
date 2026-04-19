@@ -11,6 +11,7 @@ const userSchema = new mongoose.Schema({
   // Economy
   balance: { type: Number, default: 0, min: 0 },
   stars: { type: Number, default: 0, min: 0 },
+  donate: { type: Number, default: 0, min: 0 },
   messages: { type: Number, default: 0, min: 0 },
   // Leveling
   level: { type: Number, default: 0, min: 0 },

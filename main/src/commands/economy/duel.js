@@ -23,7 +23,7 @@ export default {
 
     // Rate limiting
     const cooldownKey = `duel_${interaction.user.id}`;
-    if (duelCooldown.isOnCooldown(cooldownKey, COOLDOWN_MS)) {
+    if (duelCooldown.checkAndSet(cooldownKey, COOLDOWN_MS)) {
       const remaining = duelCooldown.getRemainingTime(cooldownKey, COOLDOWN_MS);
       return interaction.reply({ content: `⏳ Подождите ${Math.ceil(remaining / 1000)}с. перед следующим вызовом.`, ephemeral: true });
     }

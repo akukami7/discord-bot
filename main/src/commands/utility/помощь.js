@@ -1,6 +1,6 @@
 import { SlashCommandBuilder, ChannelType, PermissionsBitField, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
-import Ticket from '../models/Ticket.js';
-import TicketBlacklist from '../models/TicketBlacklist.js';
+import Ticket from '../../models/Ticket.js';
+import TicketBlacklist from '../../models/TicketBlacklist.js';
 
 export default {
     data: new SlashCommandBuilder()
@@ -29,6 +29,21 @@ export default {
         const ticketId = `ticket-${Math.floor(Math.random() * 90000) + 10000}`;
         const categoryId = process.env.TICKETS_CATEGORY_ID;
 
+        const userEmbed1 = new EmbedBuilder().setColor(0x2B2D31)
+            .setAuthor({ name: 'Служба поддержки Angelss', iconURL: guild.iconURL() || undefined })
+            .setDescription('**Ваше обращение успешно отправлено**\nОжидайте...')
+            .setColor(client.config.embedColor);
+
+        const userRow = new ActionRowBuilder().addComponents(
+            new ButtonBuilder().setCustomId('interrupt_dialog').setLabel('Прервать диалог').setStyle(ButtonStyle.Danger)
+        );
+
+        try {
+            await user.send({ embeds: [userEmbed1], components: [userRow] });
+        } catch (error) {
+            return interaction.editReply({ content: 'У вас закрыты личные сообщения. Вы не можете создать обращение!' });
+        }
+
         try {
             const channelOptions = {
                 name: `${user.username}-${ticketId}`,
@@ -44,26 +59,14 @@ export default {
                 if (categoryId) channelOptions.parent = categoryId;
                 channel = await guild.channels.create(channelOptions);
             } catch (categoryError) {
+                // В случае ошибки с категорией (например указан текстовый канал), создаем без нее
                 delete channelOptions.parent;
                 channel = await guild.channels.create(channelOptions);
             }
             const ticket = new Ticket({ ticketId, guildId: guild.id, channelId: channel.id, creatorId: user.id, status: 'pending' });
             await ticket.save();
 
-            const userEmbed1 = new EmbedBuilder()
-                .setAuthor({ name: 'Служба поддержки Angelss', iconURL: guild.iconURL() || undefined })
-                .setDescription('**Ваше обращение успешно отправлено**\nОжидайте...')
-                .setColor(client.config.embedColor);
-
-            const userRow = new ActionRowBuilder().addComponents(
-                new ButtonBuilder().setCustomId('interrupt_dialog').setLabel('Прервать диалог').setStyle(ButtonStyle.Danger)
-            );
-
-            try {
-                await user.send({ embeds: [userEmbed1], components: [userRow] });
-            } catch (_dmError) { /* DM delivery failed */ }
-
-            const staffEmbed = new EmbedBuilder()
+            const staffEmbed = new EmbedBuilder().setColor(0x2B2D31)
                 .setTitle('Новое обращение (Ожидает принятия)')
                 .setDescription(`Пользователь ${user} (${user.id}) открыл обращение.\nНажмите "Принять", чтобы начать переписку.`)
                 .addFields({ name: 'Вопрос', value: question })
@@ -77,7 +80,7 @@ export default {
 
             await channel.send({ content: `@here Новое обращение от ${user.tag}`, embeds: [staffEmbed], components: [staffRow] });
 
-            const replyEmbed = new EmbedBuilder()
+            const replyEmbed = new EmbedBuilder().setColor(0x2B2D31)
                 .setTitle('Задать вопрос по серверу')
                 .setDescription(`${user}, Вы **успешно** задали вопрос, **ожидайте** ответа`)
                 .setThumbnail(user.displayAvatarURL())
@@ -87,6 +90,7 @@ export default {
 
         } catch (error) {
             console.error('Ошибка при создании тикета:', error);
+            await user.send('Произошла ошибка при создании тикета (ошибка на стороне сервера). Пожалуйста, свяжитесь напрямую с администрацией.').catch(() => { });
             await interaction.editReply({ content: 'Произошла ошибка при создании тикета. Скорее всего неверный `TICKETS_CATEGORY_ID` (Должен быть ID Категории, а не текстового канала).' });
         }
     },

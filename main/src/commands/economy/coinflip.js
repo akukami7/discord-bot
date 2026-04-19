@@ -24,7 +24,7 @@ export default {
 
     // Rate limiting
     const cooldownKey = `coinflip_cmd_${userId}`;
-    if (coinflipCooldown.isOnCooldown(cooldownKey, COMMAND_COOLDOWN_MS)) {
+    if (coinflipCooldown.checkAndSet(cooldownKey, COMMAND_COOLDOWN_MS)) {
       const remaining = coinflipCooldown.getRemainingTime(cooldownKey, COMMAND_COOLDOWN_MS);
       return interaction.reply({ content: `⏳ Подождите ${Math.ceil(remaining / 1000)}с. перед следующей игрой.`, ephemeral: true });
     }
@@ -58,7 +58,7 @@ export default {
     setTimeout(async () => {
       const key = `coinflip_expire_${msg.id}`;
       if (!coinflipCooldown.isOnCooldown(key, DOUBLE_CLICK_KEY_MS)) {
-        coinflipCooldown.cooldowns.set(key, Date.now());
+        coinflipCooldown.setCooldown(key, DOUBLE_CLICK_KEY_MS);
         const expEmbed = new EmbedBuilder().setColor(0x2B2D31)
           .setTitle(`Монетка — ${interaction.user.displayName}`)
           .setDescription(`<@${userId}>, время на ответ **вышло**`)
@@ -83,7 +83,7 @@ export default {
 
     // Prevent double-click using cooldown manager
     const key = `coinflip_click_${interaction.message.id}`;
-    if (coinflipCooldown.isOnCooldown(key, DOUBLE_CLICK_KEY_MS)) {
+    if (coinflipCooldown.checkAndSet(key, DOUBLE_CLICK_KEY_MS)) {
       return interaction.reply({ content: 'Эта игра уже завершена.', ephemeral: true });
     }
 

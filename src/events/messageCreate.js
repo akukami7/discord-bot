@@ -1,4 +1,4 @@
-import { Events, EmbedBuilder } from 'discord.js';
+import { Events, EmbedBuilder, AttachmentBuilder } from 'discord.js';
 import Ticket from '../models/Ticket.js';
 import TicketBlacklist from '../models/TicketBlacklist.js';
 
@@ -27,19 +27,26 @@ export default {
             const ticket = await Ticket.findOne({ guildId, creatorId: user.id, status: 'open' });
 
             if (!ticket) {
-                // Ignore DMs if no ticket exists, or tell them to use the command
                 return message.reply('У вас нет активного диалога. Используйте команду `/помощь` на сервере для создания обращения.');
             }
 
             const channel = guild.channels.cache.get(ticket.channelId);
             if (channel) {
-                const relayEmbed = new EmbedBuilder().setColor(0x2B2D31)
+                const relayEmbed = new EmbedBuilder()
                     .setAuthor({ name: user.tag, iconURL: user.displayAvatarURL() })
                     .setDescription(message.content || '*Без текста*')
-                    .setColor('#2b2d31')
+                    .setColor(client.config.embedColor)
                     .setFooter({ text: `Message ID: ${message.id}` });
 
-                const files = message.attachments.map(a => a.url);
+                const files = [];
+                for (const a of message.attachments.values()) {
+                    try {
+                        const res = await fetch(a.url);
+                        const buf = Buffer.from(await res.arrayBuffer());
+                        files.push(new AttachmentBuilder(buf, { name: a.name }));
+                    } catch (_) { /* attachment download failed */ }
+                }
+
                 try {
                     await channel.send({ embeds: [relayEmbed], files });
                 } catch (e) {
@@ -50,27 +57,32 @@ export default {
         }
 
         // --- Handling guild messages (Admin to User) ---
-        if (message.guild) {
-            const ticket = await Ticket.findOne({ channelId: message.channel.id, status: 'open' });
-            if (!ticket) return;
+        const ticket = await Ticket.findOne({ channelId: message.channel.id, status: 'open' });
+        if (!ticket) return;
 
-            const user = await client.users.fetch(ticket.creatorId).catch(() => null);
-            if (!user) return message.reply('Пользователь не найден (возможно покинул сервер или заблокировал бота).');
+        const user = await client.users.fetch(ticket.creatorId).catch(() => null);
+        if (!user) return message.reply('Пользователь не найден (возможно покинул сервер или заблокировал бота).');
 
-            const relayEmbed = new EmbedBuilder().setColor(0x2B2D31)
-                .setAuthor({ name: 'Служба поддержки Angelss', iconURL: message.guild.iconURL() })
-                .setDescription(message.content || '*Без текста*')
-                .setColor(client.config.embedColor)
-                .setFooter({ text: `Message ID: ${message.id}` });
+        const relayEmbed = new EmbedBuilder()
+            .setAuthor({ name: 'Служба поддержки Angelss', iconURL: message.guild.iconURL() })
+            .setDescription(message.content || '*Без текста*')
+            .setColor(client.config.embedColor)
+            .setFooter({ text: `Message ID: ${message.id}` });
 
-            const files = message.attachments.map(a => a.url);
-
+        const files = [];
+        for (const a of message.attachments.values()) {
             try {
-                await user.send({ embeds: [relayEmbed], files });
-            } catch (err) {
-                console.error(err);
-                message.reply('Не удалось доставить сообщение пользователю (ЛС закрыты).');
-            }
+                const res = await fetch(a.url);
+                const buf = Buffer.from(await res.arrayBuffer());
+                files.push(new AttachmentBuilder(buf, { name: a.name }));
+            } catch (_) { /* attachment download failed */ }
+        }
+
+        try {
+            await user.send({ embeds: [relayEmbed], files });
+        } catch (err) {
+            console.error(err);
+            message.reply('Не удалось доставить сообщение пользователю (ЛС закрыты).');
         }
     }
 };
